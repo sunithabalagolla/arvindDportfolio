@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 export default function EventCalendar() {
     // Note: In your actual app, uncomment this and import from 'react-router-dom':
-    const navigate = useNavigate();
+    const navigate = (path) => console.log('Navigate to:', path);
 
     const events = [
         {
@@ -187,38 +186,42 @@ export default function EventCalendar() {
         <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-6 sm:mb-8 md:mb-12">
+                <div className="text-center mb-6 sm:mb-8 md:mb-12 relative">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 px-2">
                         Event Calendar
                     </h2>
                     <div className="w-16 sm:w-20 md:w-24 h-1 bg-orange-500 mx-auto"></div>
-                    <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 mt-3 sm:mt-4 md:mt-5 px-4 sm:px-6 md:px-8 max-w-2xl mx-auto">
+                    
+                    {/* Month Filter Dropdown - Responsive positioning */}
+                    <div className="flex justify-center sm:justify-end mt-4 sm:mt-0 sm:absolute sm:top-0 sm:right-0">
+                        <div className="relative">
+                            <select
+                                value={selectedMonth}
+                                onChange={(e) => handleMonthChange(e.target.value)}
+                                className="appearance-none bg-orange-500 hover:bg-orange-600 
+                         text-white font-semibold py-2 px-3 sm:py-2.5 sm:px-4 md:py-3 md:px-6 
+                         rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg 
+                         text-sm sm:text-sm md:text-base cursor-pointer 
+                         focus:outline-none focus:ring-2 focus:ring-orange-300
+                         min-w-[100px] sm:min-w-[120px] md:min-w-[140px]
+                         pr-8 sm:pr-10"
+                            >
+                                {months.map((month) => (
+                                    <option key={month} value={month} className="bg-white text-gray-700">
+                                        {month}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <ChevronRight className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 rotate-90 
+                                        w-4 h-4 text-white pointer-events-none" />
+                        </div>
+                    </div>
+                    
+                    {/* Paragraph - centered */}
+                    <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4 mt-4">
                         Stay updated with all upcoming events, workshops, and gatherings in one place.
                     </p>
-                </div>
-
-                {/* Month Filter */}
-                <div className="flex justify-center sm:justify-end mb-6 sm:mb-8 px-3 sm:px-4">
-                    <div className="relative">
-                        <select
-                            value={selectedMonth}
-                            onChange={(e) => handleMonthChange(e.target.value)}
-                            className="appearance-none bg-orange-500 hover:bg-orange-600 
-             text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 
-             rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg 
-             text-sm sm:text-base whitespace-nowrap cursor-pointer 
-             focus:outline-none focus:ring-2 focus:ring-orange-300"
-                        >
-                            {months.map((month) => (
-                                <option key={month} value={month} className="bg-white text-gray-700">
-                                    {month}
-                                </option>
-                            ))}
-                        </select>
-
-                        <ChevronRight className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 rotate-90 
-                                    w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none" />
-                    </div>
                 </div>
 
                 {/* Event Cards Container */}
@@ -266,18 +269,19 @@ export default function EventCalendar() {
                           transition-all duration-300 overflow-hidden cursor-pointer 
                           border border-gray-100 sm:border-2 hover:border-orange-200"
                             >
-                                {/* Date Badge */}
+                                {/* Date Badge - Attached to left border */}
                                 <div className="relative">
                                     <img
                                         src={event.image}
                                         alt={event.title}
                                         className="w-full h-40 sm:h-44 md:h-48 object-cover"
                                     />
-                                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 
-                                bg-black bg-opacity-70 text-white 
-                                rounded-md sm:rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-center">
-                                        <div className="text-xs font-medium opacity-80">{event.monthAbbr}</div>
-                                        <div className="text-lg sm:text-xl md:text-2xl font-bold">{event.day}</div>
+                                    <div className="absolute top-0 left-0 
+                                bg-black bg-opacity-80 text-white 
+                                rounded-br-lg px-3 py-2 sm:px-4 sm:py-3 text-center
+                                min-w-[60px] sm:min-w-[70px]">
+                                        <div className="text-xs font-medium opacity-90 leading-none">{event.monthAbbr}</div>
+                                        <div className="text-lg sm:text-xl md:text-2xl font-bold leading-none mt-1">{event.day}</div>
                                     </div>
                                 </div>
 

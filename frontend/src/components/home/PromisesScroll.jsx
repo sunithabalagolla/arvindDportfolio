@@ -59,7 +59,7 @@ function PromisesScroll() {
   const renderSlide = (card, index, keyPrefix) => (
     <div key={`${keyPrefix}-${index}`} className="flex flex-shrink-0">
       {/* Image with exact same dimensions */}
-      <div className="w-56 h-32 flex-shrink-0">
+      <div className="w-56 h-42 flex-shrink-0">
         <img 
           src={card.image} 
           alt={card.alt}
@@ -68,11 +68,11 @@ function PromisesScroll() {
       </div>
       
       {/* Content with exact same dimensions */}
-      <div className={`w-56 h-32 flex-shrink-0 flex flex-col justify-center items-center text-center px-4 ${getBackgroundColor(index)}`}>
+      <div className={`w-56 h-42 flex-shrink-0 flex flex-col justify-center items-center text-center px-4 ${getBackgroundColor(index)}`}>
         <div className="text-3xl font-bold text-black mb-1">
           {card.number}
         </div>
-        <div className="text-xs text-gray-600 font-medium leading-tight">
+        <div className="text-xs lg:text-lg text-gray-600 font-medium leading-tight">
           {card.title}
           {card.subtitle && <><br />{card.subtitle}</>}
         </div>

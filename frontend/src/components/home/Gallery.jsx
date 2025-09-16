@@ -44,12 +44,12 @@ export default function Gallery() {
             fontFamily: 'Arial, sans-serif'
         }}>
             {/* Gallery Title */}
-<div className="text-center mb-15">
-        <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-2">
-          Gallery
-        </h2>
-        <div className="w-16 sm:w-24 h-1 bg-orange-500 mx-auto"></div>
-      </div>
+            <div className="text-center mb-15">
+                <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-gray-900 mb-2">
+                    Gallery
+                </h2>
+                <div className="w-16 sm:w-24 h-1 bg-orange-500 mx-auto"></div>
+            </div>
 
             {/* Gallery Container */}
             <div style={{
@@ -70,19 +70,19 @@ export default function Gallery() {
                             position: 'relative',
                             width: '600px',  // Increased from 500px to 600px
                             height: '400px', // Increased from 350px to 400px
-                            borderRadius: '15px',
+
                             overflow: 'hidden',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease', // Smooth animation
                             transform: hoveredItem === item.id ? 'scale(1.05)' : 'scale(1)', // Zoom effect
 
                             // Increased border width - from 8px to 12px on hover
-                            border: hoveredItem === item.id ? '12px solid #e9a95bff' : '12px solid transparent',
+                            border: hoveredItem === item.id ? '20px solid #fbc9a3ff' : '12px solid transparent',
 
                             // Shadow effect on hover
-                            boxShadow: hoveredItem === item.id
-                                ? '0 20px 40px rgba(0,0,0,0.3)'
-                                : '0 10px 20px rgba(0,0,0,0.1)'
+                            // boxShadow: hoveredItem === item.id
+                            //     ? '0 20px 40px rgba(0,0,0,0.3)'
+                            //     : '0 10px 20px rgba(0,0,0,0.1)'
                         }}
                     >
                         {/* Background Image */}

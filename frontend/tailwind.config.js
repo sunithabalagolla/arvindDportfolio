@@ -8,7 +8,8 @@ export default {
     extend: {
       fontFamily: {
         hind: ['"Hind Siliguri"', 'sans-serif'], // 👈 custom font
-         abhaya: ['"Abhaya Libre"', 'serif'],
+          inter: ['Inter', 'sans-serif'],
+          abhaya: ['"Abhaya Libre"', 'serif'], 
       },
     },
   },

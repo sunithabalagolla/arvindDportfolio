@@ -67,22 +67,29 @@ function Header() {
     }
   ];
 
-  // Updated button styles with conditional BJP orange colors
+  // Updated button styles with subtle hover effects
   const buttonBaseClasses = `
     flex items-center justify-center
     h-10 md:h-12
     px-3 md:px-4
-    rounded-xl 
-    ${scrolled 
-      ? 'bg-gradient-to-r from-orange-100/20 to-orange-50/10 border-orange-200/30 hover:from-orange-100/30 hover:to-orange-50/20 hover:border-orange-200/50' 
-      : 'bg-gradient-to-r from-white/8 to-white/5 border-white/20 hover:from-white/12 hover:to-white/8 hover:border-white/30'
+    rounded-xl
+     font-inter 
+    ${scrolled
+      ? 'bg-gradient-to-r from-orange-100/20 to-orange-50/10 border-orange-200/30 hover:from-orange-100/25 hover:to-orange-50/15 hover:border-orange-200/40'
+      : 'bg-gradient-to-r from-white/8 to-white/5 border-white/20 hover:from-white/10 hover:to-white/7 hover:border-white/25'
     }
-    backdrop-blur-xl border
-    cursor-pointer
+    backdrop-blur-none 
+    bg-white/5
+border-t border-b border-l border-white/60
+     cursor-pointer
     shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_0_20px_rgba(0,0,0,0.2)]
+    hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_0_25px_rgba(0,0,0,0.25)]
     transition-all duration-300 ease-out
-    text-sm md:text-base
-    font-medium
+    font-inter
+    text-sm md:text-base lg:text-base
+    font-normal
+    hover:scale-[1.02]
+    active:scale-[0.98]
   `;
 
   const iconButtonClasses = `
@@ -99,7 +106,10 @@ function Header() {
   const searchButtonClasses = `
     ${buttonBaseClasses}
     space-x-2 md:space-x-3
-    w-28 sm:w-36 md:w-48
+    w-28 sm:w-36 md:w-43
+      font-inter
+    text-sm md:text-base lg:text-2xl
+    font-medium
   `;
 
   const handleNavClick = (item, subItem = null) => {
@@ -123,7 +133,7 @@ function Header() {
           px-4 py-3 md:px-8 lg:px-16 xl:px-32 md:py-4
           ${scrolled
             ? 'bg-gradient-to-r from-orange-500/95 via-orange-600/95 to-orange-500/95 backdrop-blur-xl border-b border-orange-400/30 shadow-2xl'
-            : 'bg-white/5 backdrop-blur-lg border-b border-white/10'
+            : 'bg-white/15 backdrop-blur-none border-b border-white/5'
           }
           transition-all duration-500 ease-out
         `}
@@ -133,9 +143,8 @@ function Header() {
           <motion.img
             src={logo}
             alt="Logo"
-            className="h-8 md:h-12 lg:h-14 w-auto object-contain drop-shadow-lg"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
+            className="h-8 md:h-12 lg:h-14 w-auto object-contain drop-shadow-md "
+
           />
         </div>
 
@@ -145,47 +154,47 @@ function Header() {
         {/* Right side buttons with flexbox layout */}
         <div className="flex items-center gap-2 md:gap-3 text-white">
 
-          {/* Search Button - Updated colors */}
+          {/* Search Button - Updated with subtle hover effects */}
           <motion.button
             className={searchButtonClasses}
             onClick={() => setSearchOpen(true)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <FaSearch className={`${scrolled ? 'text-white/90' : 'text-white/70'} group-hover:text-white transition-colors duration-300 flex-shrink-0`} />
-            <span className={`${scrolled ? 'text-white' : 'text-white/80'} truncate text-xs md:text-sm`}>Search</span>
+            <FaSearch className={`${scrolled ? 'text-white/90' : 'text-white/100'} group-hover:text-white transition-all duration-300 flex-shrink-0`} />
+            <span className={`${scrolled ? 'text-white' : 'text-white/90'} truncate text-xs md:text-base transition-all duration-300`}>Search here</span>
           </motion.button>
 
-          {/* Login/Signup - Desktop only, updated colors */}
+          {/* Login/Signup - Desktop only, updated with subtle hover effects */}
           <motion.button
             className={`${textButtonClasses} hidden lg:flex`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <FaUser className={`${scrolled ? 'text-white/90' : 'text-white/80'} transition-colors duration-300 flex-shrink-0`} />
-            <span className={`${scrolled ? 'text-white' : 'text-white/90'} whitespace-nowrap`}>Login/Signup</span>
+            <FaUser className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
+            <span className={`${scrolled ? 'text-white' : 'text-white/90'} whitespace-nowrap transition-all duration-300`}>Login/Signup</span>
           </motion.button>
 
-          {/* Language - Desktop only, updated colors */}
+          {/* Language - Desktop only, updated with subtle hover effects */}
           <motion.button
             className={`${textButtonClasses} hidden md:flex`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <FaGlobe className={`${scrolled ? 'text-white/90' : 'text-white/80'} transition-colors duration-300 flex-shrink-0`} />
-            <span className={`${scrolled ? 'text-white' : 'text-white/90'}`}>EN</span>
+            <FaGlobe className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
+            <span className={`${scrolled ? 'text-white' : 'text-white/90'} transition-all duration-300`}>EN</span>
           </motion.button>
 
-          {/* Cart - Desktop only, updated colors */}
+          {/* Cart - Desktop only, updated with subtle hover effects */}
           <motion.button
             className={`${iconButtonClasses} hidden md:flex`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <FaShoppingCart className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/80 hover:text-white'} transition-colors duration-300`} />
+            <FaShoppingCart className={`${scrolled ? 'text-white/100 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
           </motion.button>
 
-          {/* Hamburger - Updated colors */}
+          {/* Hamburger - Updated with subtle hover effects */}
           <motion.button
             className={iconButtonClasses}
             onClick={() => setMenuOpen(!menuOpen)}
@@ -197,9 +206,9 @@ function Header() {
               transition={{ duration: 0.3 }}
             >
               {menuOpen ? (
-                <FaTimes className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/80 hover:text-white'} transition-colors duration-300`} />
+                <FaTimes className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
               ) : (
-                <FaBars className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/80 hover:text-white'} transition-colors duration-300`} />
+                <FaBars className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
               )}
             </motion.div>
           </motion.button>
@@ -221,7 +230,8 @@ function Header() {
             <div className="flex justify-end p-4 md:p-6">
               <motion.button
                 className="text-white/80 text-2xl md:text-3xl hover:text-white 
-                p-2 rounded-full hover:bg-white/10 transition-all duration-300"
+                p-2 rounded-full hover:bg-white/10 transition-all duration-300
+                hover:scale-110 active:scale-90"
                 onClick={() => setMenuOpen(false)}
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
@@ -233,7 +243,7 @@ function Header() {
             {/* Content container with proper spacing */}
             <div className="flex-1 px-6 pb-6 space-y-6 max-w-sm mx-auto w-full">
 
-              {/* Mobile-only buttons - Consistent sizing */}
+              {/* Mobile-only buttons - Updated with subtle hover effects */}
               <div className="space-y-4">
                 {/* Login/Signup for mobile */}
                 <motion.button
@@ -241,18 +251,19 @@ function Header() {
                   h-12 px-4 rounded-xl 
                   bg-gradient-to-r from-white/15 via-white/12 to-white/8 
                   backdrop-blur-2xl border-2 border-white/30
-                  hover:from-white/25 hover:via-white/18 hover:to-white/12 hover:border-white/40 
+                  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
                   shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.3),0_12px_40px_rgba(0,0,0,0.2)]
+                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
                   transition-all duration-300 lg:hidden
                   relative overflow-hidden
                   before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                  before:rounded-xl before:pointer-events-none"
+                  before:rounded-xl before:pointer-events-none
+                  hover:scale-[1.02] active:scale-[0.98]"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <FaUser className="text-white/80 mr-3 flex-shrink-0" />
-                  <span className="text-white/90 font-medium">Login / Signup</span>
+                  <FaUser className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+                  <span className="text-white/90 font-medium transition-all duration-300">Login / Signup</span>
                 </motion.button>
 
                 {/* Language for mobile */}
@@ -261,18 +272,19 @@ function Header() {
                   h-12 px-4 rounded-xl 
                   bg-gradient-to-r from-white/15 via-white/12 to-white/8 
                   backdrop-blur-2xl border-2 border-white/30
-                  hover:from-white/25 hover:via-white/18 hover:to-white/12 hover:border-white/40 
+                  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
                   shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.3),0_12px_40px_rgba(0,0,0,0.2)]
+                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
                   transition-all duration-300 md:hidden
                   relative overflow-hidden
                   before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                  before:rounded-xl before:pointer-events-none"
+                  before:rounded-xl before:pointer-events-none
+                  hover:scale-[1.02] active:scale-[0.98]"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <FaGlobe className="text-white/80 mr-3 flex-shrink-0" />
-                  <span className="text-white/90 font-medium">English</span>
+                  <FaGlobe className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+                  <span className="text-white/90 font-medium transition-all duration-300">English</span>
                 </motion.button>
 
                 {/* Cart for mobile */}
@@ -281,18 +293,19 @@ function Header() {
                   h-12 px-4 rounded-xl 
                   bg-gradient-to-r from-white/15 via-white/12 to-white/8 
                   backdrop-blur-2xl border-2 border-white/30
-                  hover:from-white/25 hover:via-white/18 hover:to-white/12 hover:border-white/40 
+                  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
                   shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.3),0_12px_40px_rgba(0,0,0,0.2)]
+                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
                   transition-all duration-300 md:hidden
                   relative overflow-hidden
                   before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                  before:rounded-xl before:pointer-events-none"
+                  before:rounded-xl before:pointer-events-none
+                  hover:scale-[1.02] active:scale-[0.98]"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0" />
-                  <span className="text-white/90 font-medium">Shopping Cart</span>
+                  <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+                  <span className="text-white/90 font-medium transition-all duration-300">Shopping Cart</span>
                 </motion.button>
               </div>
 
@@ -328,10 +341,11 @@ text-white/90 hover:text-black text-lg font-medium
 rounded-xl hover:bg-white
 hover:backdrop-blur-md hover:border hover:border-white/10
 transition-all duration-300 group cursor-pointer
-flex items-center justify-between"
+flex items-center justify-between
+hover:scale-[1.02] active:scale-[0.98]"
                       onClick={() => item.subItems ? setHoveredItem(hoveredItem === i ? null : i) : handleNavClick(item)}
                     >
-                      <span className="relative inline-block flex-1">
+                      <span className="relative inline-block flex-1 transition-all duration-300">
                         {item.name}
                         <motion.div
                           className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full"
@@ -345,7 +359,7 @@ flex items-center justify-between"
                           animate={{ rotate: hoveredItem === i ? 180 : 0 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <FaChevronDown className="text-white/60 ml-2" />
+                          <FaChevronDown className="text-white/60 ml-2 transition-all duration-300" />
                         </motion.div>
                       )}
                     </div>
@@ -365,9 +379,10 @@ flex items-center justify-between"
                               key={j}
                               className="block w-full text-left py-3 px-4 
                               text-white/80 hover:text-white text-base font-normal
-                              rounded-lg hover:bg-gradient-to-r hover:from-white/8 hover:to-white/4
+                              rounded-lg hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5
                               hover:backdrop-blur-md transition-all duration-300
-                              border border-white/10 hover:border-white/20"
+                              border border-white/10 hover:border-white/20
+                              hover:scale-[1.02] active:scale-[0.98]"
                               onClick={() => handleNavClick(item, subItem)}
                               whileHover={{ scale: 1.02, x: 5 }}
                               whileTap={{ scale: 0.98 }}
@@ -404,7 +419,8 @@ flex items-center justify-between"
             <div className="flex justify-end p-4 md:p-6">
               <motion.button
                 className="text-white/80 text-2xl md:text-3xl hover:text-white 
-                p-2 rounded-full hover:bg-white/10 transition-all duration-300"
+                p-2 rounded-full hover:bg-white/10 transition-all duration-300
+                hover:scale-110 active:scale-90"
                 onClick={() => setSearchOpen(false)}
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
@@ -421,18 +437,19 @@ flex items-center justify-between"
                 className="w-full bg-gradient-to-r from-white/95 to-white/90 
                 rounded-2xl md:rounded-3xl shadow-2xl flex items-center 
                 px-4 md:px-6 py-3 md:py-4 mb-8
-                backdrop-blur-xl border border-white/30"
+                backdrop-blur-xl border border-white/30
+                hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
               >
-                <FaSearch className="text-gray-600 text-lg md:text-2xl mr-3 md:mr-4 flex-shrink-0" />
+                <FaSearch className="text-gray-600 text-lg md:text-2xl mr-3 md:mr-4 flex-shrink-0 transition-all duration-300" />
                 <input
                   type="text"
                   placeholder="Search anything..."
                   autoFocus
                   className="w-full text-base md:text-xl text-gray-800 placeholder-gray-500 
-                  focus:outline-none bg-transparent font-medium"
+                  focus:outline-none bg-transparent font-medium transition-all duration-300"
                 />
               </motion.div>
 
@@ -451,10 +468,11 @@ flex items-center justify-between"
                         className="px-3 md:px-4 py-2 md:py-2.5 
                         bg-gradient-to-r from-white/15 to-white/10 
                         rounded-lg md:rounded-xl text-white/90 
-                        hover:from-white/25 hover:to-white/15 hover:text-white
+                        hover:from-white/20 hover:to-white/15 hover:text-white
                         backdrop-blur-md border border-white/20
                         transition-all duration-300 font-medium
-                        text-sm md:text-base"
+                        text-sm md:text-base
+                        hover:scale-105 active:scale-95"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -477,10 +495,11 @@ flex items-center justify-between"
                         className="px-3 md:px-4 py-2 md:py-2.5 
                         bg-gradient-to-r from-white/15 to-white/10 
                         rounded-lg md:rounded-xl text-white/90 
-                        hover:from-white/25 hover:to-white/15 hover:text-white
+                        hover:from-white/20 hover:to-white/15 hover:text-white
                         backdrop-blur-md border border-white/20
                         transition-all duration-300 font-medium
-                        text-sm md:text-base"
+                        text-sm md:text-base
+                        hover:scale-105 active:scale-95"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -490,6 +509,7 @@ flex items-center justify-between"
                   </div>
                 </motion.div>
               </div>
+
             </div>
           </motion.div>
         )}

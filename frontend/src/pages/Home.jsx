@@ -14,6 +14,7 @@ import Footer from "../components/common/footer";
 import FullWidthImage from "../components/home/FullWidthImage";
 import ShopSection from "../components/home/ShopSection";
 import SocialSection from "../components/home/SocialSection";
+import ArvindArmyCard from "../components/home/ArvindArmyCard";
 
 
 
@@ -37,6 +38,7 @@ function Home() {
         <ArvindFoundationCarousel></ArvindFoundationCarousel>
         <EventCalendar></EventCalendar>
         <DonationSection></DonationSection>
+        <ArvindArmyCard></ArvindArmyCard>
         <FeedbackForm></FeedbackForm>
         <SocialSection></SocialSection>
         <ShopSection></ShopSection>

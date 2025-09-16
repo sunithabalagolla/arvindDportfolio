@@ -93,27 +93,27 @@ function Carousel() {
                 {slide.id === 1 || slide.id === 3 ? (
                   // Slide 1 & 3: Left side
                   <div className="text-white text-center sm:text-left max-w-[800px] mx-auto sm:mx-0 px-4 sm:pl-10 md:pl-38">
-                    <h2 className="font-abhaya font-bold text-sm sm:text-3xl md:text-[80px] mb-4 drop-shadow-lg">
+                    <h2 className="!font-['Abhaya_Libre']   text-sm sm:text-3xl md:text-[84px] mb-4 drop-shadow-lg">
                       {slide.heading}
                     </h2>
-                    <p className="text-xs sm:text-base md:text-base leading-relaxed mb-4 text-[#FAFAFA] drop-shadow-md">
+                    <p className=" font-['Hind_Siliguri'] text-xs font-normal sm:text-base md:text-base leading-relaxed mb-4 text-[#FAFAFA] drop-shadow-md">
                       {slide.paragraph}
                     </p>
-                    <button className="bg-[#FF9933] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 sm:text-sm rounded-lg hover:brightness-90 transition">
-                      Know More
-                    </button>
+                        <button className="bg-[#FB8B35] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 lg:px-8 lg:py-2.5 sm:text-sm lg:text-base rounded-lg  hover:bg-white 
+    hover:text-[#FB8B35] transition">Know More</button>
                   </div>
 
                 ) : (
                   // Slide 2: Container on right, text aligned left inside
                   <div className="text-white text-center sm:text-left max-w-[800px] mx-auto sm:ml-auto sm:mr-0 px-3 sm:pr-10 md:pr-16">
-                    <h2 className="font-abhaya font-bold text-sm sm:text-3xl md:text-6xl mb-4 drop-shadow-lg">
+                    <h2 className="!font-['Abhaya_Libre']  text-sm sm:text-3xl md:text-6xl mb-4 drop-shadow-lg">
                       {slide.heading}
                     </h2>
-                    <p className="text-xs sm:text-base md:text-base leading-relaxed mb-4 text-[#FAFAFA] drop-shadow-md">
+                    <p className=" font-['Hind_Siliguri'] text-xs sm:text-base md:text-base leading-relaxed mb-4 text-[#FAFAFA] drop-shadow-md">
                       {slide.paragraph}
                     </p>
-                    <button className="bg-[#FF9933] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 sm:text-sm rounded-lg hover:brightness-90 transition">
+                    <button className="bg-[#FB8B35] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 lg:px-8 lg:py-2.5 sm:text-sm lg:text-base rounded-lg  hover:bg-white 
+    hover:text-[#FB8B35] transition">
                       Know More
                     </button>
                   </div>
