@@ -6,6 +6,10 @@ import AllOpportunities from "../pages/VolunteerDashboard/AllOpportunities";
 import OpportunityDetails from "../pages/VolunteerDashboard/OpportunityDetails";
 import JoinEvent from "../pages/VolunteerDashboard/JoinEvent";
 import EventDetails from "../pages/eventNavigate/EventDetails";
+import Login from "../pages/auth/Login";
+import Signup from "../pages/auth/Signup";
+import Dashboard from "../pages/auth/Dashboard";
+import Time from "../pages/About/Time";
 
 
 
@@ -39,9 +43,12 @@ function AppRoutes() {
 <Route path="/volunteer/join/:id" element={<JoinEvent></JoinEvent>} />
 
 <Route  path="/event/:id" element={<EventDetails/>} />
+
+{/* ---------about */}
+  <Route path="/about/timeline" element={<Time />} />
   
       {/* <Route path="/about" element={<About />} />
-      <Route path="/about/timeline" element={<Timeline />} />
+    
       <Route path="/about/foundation" element={<Foundation />} />
 
       <Route path="/myview" element={<MyView />} />
@@ -63,8 +70,9 @@ function AppRoutes() {
       <Route path="/contact" element={<Contact />} /> */}
 
       {/* Auth */}
-      {/* <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} /> */}
+       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup/>} /> 
+         <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
 }

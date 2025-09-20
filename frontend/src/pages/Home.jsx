@@ -1,6 +1,6 @@
 import React from "react";
 import Carousel from "../components/home/Carousel";
-import Header from "../components/common/Header";
+// import Header from "../components/common/Header";
 import ArvindProfile from "../components/home/ArvindProfile";
 import NewsCarousel from "../components/home/NewsCarousel";
 import PromisesScroll from "../components/home/PromisesScroll";
@@ -22,7 +22,7 @@ function Home() {
     return (
         <div className="relative w-full h-screen">
               {/* Header overlays at the very top */}
-      <Header />
+      {/* <Header /> */}
 
       {/* Carousel behind header */}
       <Carousel />

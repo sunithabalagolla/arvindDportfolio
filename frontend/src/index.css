@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* index.css */
+
 body {
   font-family: 'Hind Siliguri', sans-serif;
 }
@@ -7,3 +7,43 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Source Sans Pro', sans-serif;
 }
+/* 
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.swiper,
+.swiper-slide,
+.swiper-wrapper {
+  background: transparent !important;
+}
+
+
+body {
+  font-family: 'Hind Siliguri', sans-serif;
+  background: #ffffff !important; 
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+
+.App {
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+} */
