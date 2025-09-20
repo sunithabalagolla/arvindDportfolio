@@ -80,8 +80,9 @@ src/
 │   ├─ VolunteerDashboard.jsx  # Full Volunteer Dashboard page
 │   ├─ Events.jsx              # Full Event Calendar page
 │   ├─ Contact.jsx             # Contact / feedback page
-│   ├─ Login.jsx
-│   └─ Signup.jsx
+│   ├─ auth/
+        |-profile,loign.jsx,signup.jsx
+│   └─ 
 │
 ├─ routes/                     # Optional routing configuration
 │   └─ AppRoutes.jsx
