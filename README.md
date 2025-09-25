@@ -81,7 +81,7 @@ src/
 │   ├─ Events.jsx              # Full Event Calendar page
 │   ├─ Contact.jsx             # Contact / feedback page
 │   ├─ auth/
-        |-profile,loign.jsx,signup.jsx
+        |-dashboard,login.jsx,signup.jsx,OTPVerification.jsx (NEW)
 │   └─ 
 │
 ├─ routes/                     # Optional routing configuration
@@ -92,3 +92,38 @@ src/
 │
 ├─ App.jsx                      # Main App with Router
 └─ main.jsx                     # Vite entry point
+src/
+   ├── context/
+   │   └── AuthContext.jsx (NEW)
+   └── utils/
+       └── api.js (NEW - for backend calls)
+
+
+
+
+//backend
+
+
+backend/
+├── config/
+│   ├── database.js      # Sets up the MongoDB connection to store users and OTPs.
+│   └── email.js         # Configures email service (SMTP, API keys, sender email) for sending OTPs.
+├── controllers/
+│   ├── authController.js # Handles signup, login, logout, and overall user authentication logic.
+│   └── otpController.js  # Handles generating OTPs, sending OTP emails, and verifying OTPs.
+├── middleware/
+│   ├── auth.js          # Middleware to check if a user is authenticated (JWT/session verification).
+│   └── validation.js    # Middleware to validate user input (email format, password strength, etc.).
+├── models/
+│   ├── User.js          # Defines the User schema in MongoDB (name, email, password, verified status, etc.).
+│   └── OTP.js           # Defines the OTP schema (code, associated user, expiry time, etc.).
+├── routes/
+│   ├── auth.js          # Defines API routes for signup, login, logout, etc.
+│   └── otp.js           # Defines API routes for sending OTP and verifying OTP.
+├── utils/
+│   ├── sendEmail.js     # Helper function to send OTP emails to users.
+│   └── generateOTP.js   # Helper function to generate random OTP codes.
+├── .env                 # Stores environment variables (DB URL, email credentials, JWT secret).
+├── .gitignore           # Ensures sensitive files (like .env) are not pushed to Git.
+├── package.json         # Lists project dependencies, scripts, and metadata.
+└── server.js            # Main entry point: starts the server, connects to DB, and sets up routes.
