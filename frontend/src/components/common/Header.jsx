@@ -16,18 +16,15 @@ import logo from "../../assets/logo/logo.png";
 
 function Header({ forceOrangeBackground = false }) {
 
-
-
-  //
-   const location = useLocation();
+  const location = useLocation();
   const isDashboardPage = location.pathname === '/dashboard' || location.pathname.includes('/dashboard');
-
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
-  
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+
   // Language dropdown state
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('EN');
@@ -36,7 +33,7 @@ function Header({ forceOrangeBackground = false }) {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const scrollRef = useRef(null);
-  
+
   // Add ref for search input
   const searchInputRef = useRef(null);
 
@@ -55,7 +52,7 @@ function Header({ forceOrangeBackground = false }) {
       const focusTimeout = setTimeout(() => {
         searchInputRef.current.focus();
       }, 100);
-      
+
       return () => clearTimeout(focusTimeout);
     }
   }, [searchOpen]);
@@ -80,9 +77,9 @@ function Header({ forceOrangeBackground = false }) {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ 
-        left: direction === 'left' ? -200 : 200, 
-        behavior: 'smooth' 
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -200 : 200,
+        behavior: 'smooth'
       });
       setTimeout(checkScroll, 300);
     }
@@ -118,27 +115,47 @@ function Header({ forceOrangeBackground = false }) {
     },
     {
       name: "My View",
-      href: "/myview",
-      subItems: null
+      href: null,
+      subItems: [
+        { name: "Quotes", href: "/view/Quotes" },
+        { name: "Articles", href: "/view/Articles" },
+        { name: "Blogs", href: "/view/Blogs" }
+      ]
     },
     {
-      name: "Press",
+      name: "  Press",
       href: "/press",
-      subItems: null
+       subItems: [
+        { name: "All News", href: "/news/AllNews" },
+        { name: "Press Release", href: "/news/PressRelease" },
+        { name: "News Coverage", href: "/news/NewsCoverage" },
+        {name:"Interviews",href:"/news/Interviews"},
+        {name:"Announcements",href:"/news/Announcements"}
+      ]
     },
     {
       name: "Get in Touch",
-      href: null,
+      href: "/getintouch",
       subItems: [
-        { name: "Contact Us", href: "/contact" },
-        { name: "Support", href: "/support" },
-        { name: "Office Locations", href: "/locations" }
+        { name: "Contact", href: "/getintouch/contact" },
+        { name: "Write to AR", href: "/getintouch/writetoar" },
+       
       ]
+    },
+    {
+    name:"Donation",
+    href:"https://pmcares.gov.in/en/web/contribution/donate_india",
+    subItems:null
     },
     {
       name: "Newsletter",
       href: "/newsletter",
-      subItems: null
+      subItems: [
+        {name:'Recent Issues',href:"/newsletter/Recent"},
+        {name:'Archives',href:"/newsletter/Archives"},
+        {name:'Subscriptions',href:"/newsletter/Subscriptions"},
+        {name:'Create',href:"/newsletter/Create"}
+      ]
     }
   ];
 
@@ -211,17 +228,17 @@ border-t border-b border-l border-white/60
     }
   };
 
-//naviate the auth login page 
- const navigate = useNavigate();
-  
+  //naviate the auth login page 
+  const navigate = useNavigate();
+
   // Add this function
   const handleLoginClick = () => {
     navigate('/login'); // or '/signup' based on your preference
   };
-  
+
   return (
-     <header className="fixed top-0 left-0 w-full z-50 transition-all duration-500">
-     
+    <header className="fixed top-0 left-0 w-full z-50 transition-all duration-500">
+
       {/* Header container with BJP orange background when scrolled */}
       <div
         className={`
@@ -260,7 +277,7 @@ border-t border-b border-l border-white/60
           </motion.button>
 
           {/* Login/Signup - Desktop only */}
-          <motion.button  onClick={handleLoginClick} // Add this
+          <motion.button onClick={handleLoginClick} // Add this
             className={`${textButtonClasses} hidden lg:flex`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -284,9 +301,8 @@ border-t border-b border-l border-white/60
               <motion.div
                 animate={{ rotate: isLanguageOpen ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
-                className={`w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${
-                  scrolled ? 'border-t-white/90' : 'border-t-white/100'
-                } transition-all duration-300 ml-1`}
+                className={`w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${scrolled ? 'border-t-white/90' : 'border-t-white/100'
+                  } transition-all duration-300 ml-1`}
               />
             </motion.button>
 
@@ -317,8 +333,8 @@ border-t border-b border-l border-white/60
 
             {/* Backdrop to close dropdown when clicking outside */}
             {isLanguageOpen && (
-              <div 
-                className="fixed inset-0 z-40" 
+              <div
+                className="fixed inset-0 z-40"
                 onClick={() => setIsLanguageOpen(false)}
               />
             )}
@@ -354,7 +370,7 @@ border-t border-b border-l border-white/60
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - New Design */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -362,7 +378,7 @@ border-t border-b border-l border-white/60
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "-100%", opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed inset-0 bg-gradient-to-b from-orange-500 to-orange-600 
+            className="fixed inset-0 bg-gradient-to-b from-[#FB8B35] to-[#FB8B35] 
             backdrop-blur-xl flex flex-col z-50 overflow-y-auto"
           >
             {/* Header with close button */}
@@ -379,153 +395,284 @@ border-t border-b border-l border-white/60
               </motion.button>
             </div>
 
-            {/* Content container with proper spacing */}
-            <div className="flex-1 px-6 pb-6 space-y-6 max-w-sm mx-auto w-full">
-              {/* Mobile-only buttons */}
-              <div className="space-y-4">
-                {/* Login/Signup for mobile */}
-                <motion.button
-                 onClick={handleLoginClick} // btn
-                  className="w-full flex items-center justify-start 
-                  h-12 px-4 rounded-xl 
-                  bg-gradient-to-r from-white/15 via-white/12 to-white/8 
-                  backdrop-blur-2xl border-2 border-white/30
-                  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
-                  shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
-                  transition-all duration-300 lg:hidden
-                  relative overflow-hidden
-                  before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                  before:rounded-xl before:pointer-events-none
-                  hover:scale-[1.02] active:scale-[0.98]"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FaUser className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
-                  <span className="text-white/90 font-medium transition-all duration-300">Login / Signup</span>
-                </motion.button>
-
-                {/* Language for mobile */}
-                <motion.button
-                  className="w-full flex items-center justify-start 
-                  h-12 px-4 rounded-xl 
-                  bg-gradient-to-r from-white/15 via-white/12 to-white/8 
-                  backdrop-blur-2xl border-2 border-white/30
-                  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
-                  shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
-                  transition-all duration-300 md:hidden
-                  relative overflow-hidden
-                  before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                  before:rounded-xl before:pointer-events-none
-                  hover:scale-[1.02] active:scale-[0.98]"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FaGlobe className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
-                  <span className="text-white/90 font-medium transition-all duration-300">English</span>
-                </motion.button>
-
-                {/* Cart for mobile */}
-                <motion.button
-                  className="w-full flex items-center justify-start 
-                  h-12 px-4 rounded-xl 
-                  bg-gradient-to-r from-white/15 via-white/12 to-white/8 
-                  backdrop-blur-2xl border-2 border-white/30
-                  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
-                  shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
-                  transition-all duration-300 md:hidden
-                  relative overflow-hidden
-                  before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                  before:rounded-xl before:pointer-events-none
-                  hover:scale-[1.02] active:scale-[0.98]"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
-                  <span className="text-white/90 font-medium transition-all duration-300">Shopping Cart</span>
-                </motion.button>
-              </div>
-
-              {/* Navigation Links with Submenus - Mobile */}
-              <motion.nav
-                className="space-y-3"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.08,
-                      delayChildren: 0.2
-                    }
-                  }
-                }}
-              >
-                {navigationItems.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    className="relative"
-                    variants={{
-                      hidden: { y: 30, opacity: 0 },
-                      visible: { y: 0, opacity: 1 }
-                    }}
-                  >
-                    {/* Main Navigation Item */}
-                    <div
-                      className="block w-full text-center py-4 px-6 
-text-white/90 hover:text-black text-lg font-medium
-rounded-xl hover:bg-white
-hover:backdrop-blur-md hover:border hover:border-white/10
-transition-all duration-300 group cursor-pointer
-flex items-center justify-between
-hover:scale-[1.02] active:scale-[0.98]"
-                      onClick={() => item.subItems ? setHoveredItem(hoveredItem === i ? null : i) : handleNavClick(item)}
+            {/* Main Menu Content - Responsive Layout */}
+            <div className="flex-1 px-6 pb-6">
+              <div className="max-w-6xl mx-auto">
+                {/* Mobile & Tablet Layout (below lg) */}
+                <div className="lg:hidden">
+                  {/* Mobile-only buttons first */}
+                  <div className="space-y-3 mb-6">
+                    {/* Login/Signup for mobile */}
+                    <motion.button
+                      onClick={handleLoginClick}
+                      className="w-full flex items-center justify-start 
+                      h-12 px-4 rounded-xl 
+                      bg-gradient-to-r from-white/15 via-white/12 to-white/8 
+                      backdrop-blur-2xl border-2 border-white/30
+                      hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
+                      shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
+                      hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
+                      transition-all duration-300
+                      relative overflow-hidden
+                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
+                      before:rounded-xl before:pointer-events-none
+                      hover:scale-[1.02] active:scale-[0.98]"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <span className="relative inline-block flex-1 transition-all duration-300">
-                        {item.name}
+                      <FaUser className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+                      <span className="text-white/90 font-medium transition-all duration-300">Login / Signup</span>
+                    </motion.button>
+
+                    {/* Language for mobile */}
+                    <motion.button
+                      className="w-full flex items-center justify-start 
+                      h-12 px-4 rounded-xl 
+                      bg-gradient-to-r from-white/15 via-white/12 to-white/8 
+                      backdrop-blur-2xl border-2 border-white/30
+                      hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
+                      shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
+                      hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
+                      transition-all duration-300 md:block
+                      relative overflow-hidden
+                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
+                      before:rounded-xl before:pointer-events-none
+                      hover:scale-[1.02] active:scale-[0.98]"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <FaGlobe className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+                      <span className="text-white/90 font-medium transition-all duration-300">English</span>
+                    </motion.button>
+
+                    {/* Cart for mobile */}
+                    <motion.button
+                      className="w-full flex items-center justify-start 
+                      h-12 px-4 rounded-xl 
+                      bg-gradient-to-r from-white/15 via-white/12 to-white/8 
+                      backdrop-blur-2xl border-2 border-white/30
+                      hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
+                      shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
+                      hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
+                      transition-all duration-300 md:block
+                      relative overflow-hidden
+                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
+                      before:rounded-xl before:pointer-events-none
+                      hover:scale-[1.02] active:scale-[0.98]"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+                      <span className="text-white/90 font-medium transition-all duration-300">Shopping Cart</span>
+                    </motion.button>
+                  </div>
+
+                  {/* Mobile/Tablet Two-Column Layout */}
+                  <div className="grid grid-cols-[1fr_1px_1fr] gap-4 md:gap-8 h-full">
+                    {/* Left Column - Main Navigation */}
+                    <div className="space-y-2">
+                      <motion.div
+                        className="space-y-2"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          hidden: { opacity: 0 },
+                          visible: {
+                            opacity: 1,
+                            transition: {
+                              staggerChildren: 0.08,
+                              delayChildren: 0.2
+                            }
+                          }
+                        }}
+                      >
+                        {navigationItems.map((item, i) => (
+                          <motion.div
+                            key={i}
+                            variants={{
+                              hidden: { y: 30, opacity: 0 },
+                              visible: { y: 0, opacity: 1 }
+                            }}
+                          >
+                            <motion.button
+                              className={`w-full text-left py-3 md:py-4 px-3 md:px-4 text-base md:text-lg font-medium
+                              rounded-lg md:rounded-xl transition-all duration-300 group cursor-pointer
+                              flex items-center justify-between
+                              ${selectedMenuItem === i 
+                                ? 'bg-white text-black shadow-lg' 
+                                : 'text-white/90 hover:text-black hover:bg-white'
+                              }
+                              hover:scale-[1.02] active:scale-[0.98]`}
+                              onClick={() => {
+                                if (item.subItems) {
+                                  setSelectedMenuItem(selectedMenuItem === i ? null : i);
+                                } else {
+                                  handleNavClick(item);
+                                }
+                              }}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <span>{item.name}</span>
+                              {item.subItems && (
+                                <motion.div
+                                  animate={{ rotate: selectedMenuItem === i ? 90 : 0 }}
+                                  transition={{ duration: 0.3 }}
+                                >
+                                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+                                </motion.div>
+                              )}
+                            </motion.button>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </div>
+
+                    {/* Vertical Separator Line */}
+                    <div className="w-0.5 bg-white/20 mx-auto"></div>
+
+                    {/* Right Column - Submenu Items */}
+                    <div>
+                      <AnimatePresence mode="wait">
+                        {selectedMenuItem !== null && navigationItems[selectedMenuItem]?.subItems && (
+                          <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-2 md:space-y-3"
+                          >
+                            <h3 className="text-white text-lg md:text-xl font-semibold mb-3 md:mb-4">
+                              {navigationItems[selectedMenuItem]?.name}
+                            </h3>
+                            {navigationItems[selectedMenuItem]?.subItems.map((subItem, j) => (
+                              <motion.button
+                                key={j}
+                                className="block w-full text-left py-2.5 md:py-3 px-3 md:px-4 
+                                text-white/80 hover:text-black text-sm md:text-base font-normal
+                                rounded-lg hover:bg-white
+                                transition-all duration-300
+                                hover:scale-[1.02] active:scale-[0.98]"
+                                onClick={() => handleNavClick(navigationItems[selectedMenuItem], subItem)}
+                                whileHover={{ scale: 1.02, x: 5 }}
+                                whileTap={{ scale: 0.98 }}
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ delay: j * 0.1 }}
+                              >
+                                {subItem.name}
+                              </motion.button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      
+                      {selectedMenuItem === null && (
                         <motion.div
-                          className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: hoveredItem === i ? "100%" : 0 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      </span>
-                      {item.subItems && (
-                        <motion.div
-                          animate={{ rotate: hoveredItem === i ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="flex items-center justify-center h-full min-h-[150px] md:min-h-[200px]"
                         >
-                          <FaChevronDown className="text-white/60 ml-2 transition-all duration-300" />
+                          <p className="text-white/60 text-center text-sm md:text-base px-2">
+                            Select a menu item to see options
+                          </p>
                         </motion.div>
                       )}
                     </div>
+                  </div>
+                </div>
 
-                    {/* Submenu Items */}
-                    <AnimatePresence>
-                      {item.subItems && hoveredItem === i && (
+                {/* Desktop Layout (lg and above) */}
+                <div className="hidden lg:grid lg:grid-cols-[1fr_2px_2fr] gap-8 lg:gap-12 h-full">
+                  {/* Left Column - Main Navigation */}
+                  <div className="space-y-4">
+                    {/* Main Navigation Items */}
+                    <motion.div
+                      className="space-y-2"
+                      initial="hidden"
+                      animate="visible"
+                      variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                          opacity: 1,
+                          transition: {
+                            staggerChildren: 0.08,
+                            delayChildren: 0.2
+                          }
+                        }
+                      }}
+                    >
+                      {navigationItems.map((item, i) => (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="overflow-hidden ml-4 mt-2 space-y-2"
+                          key={i}
+                          variants={{
+                            hidden: { y: 30, opacity: 0 },
+                            visible: { y: 0, opacity: 1 }
+                          }}
                         >
-                          {item.subItems.map((subItem, j) => (
+                          <motion.button
+                            className={`w-full text-left py-4 px-6 text-lg font-medium
+                            rounded-xl transition-all duration-300 group cursor-pointer
+                            flex items-center justify-between
+                            ${selectedMenuItem === i 
+                              ? 'bg-white text-black shadow-lg' 
+                              : 'text-white/90 hover:text-black hover:bg-white'
+                            }
+                            hover:scale-[1.02] active:scale-[0.98]`}
+                            onClick={() => {
+                              if (item.subItems) {
+                                setSelectedMenuItem(selectedMenuItem === i ? null : i);
+                              } else {
+                                handleNavClick(item);
+                              }
+                            }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <span>{item.name}</span>
+                            {item.subItems && (
+                              <motion.div
+                                animate={{ rotate: selectedMenuItem === i ? 90 : 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                <ChevronRight className="w-5 h-5" />
+                              </motion.div>
+                            )}
+                          </motion.button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* Vertical Separator Line */}
+                  <div className="w-0.5 bg-white/20 mx-auto"></div>
+
+                  {/* Right Column - Submenu Items */}
+                  <div className="lg:pl-8">
+                    <AnimatePresence mode="wait">
+                      {selectedMenuItem !== null && navigationItems[selectedMenuItem]?.subItems && (
+                        <motion.div
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="space-y-3"
+                        >
+                          <h3 className="text-white text-xl font-semibold mb-4 lg:mb-6">
+                            {navigationItems[selectedMenuItem]?.name}
+                          </h3>
+                          {navigationItems[selectedMenuItem]?.subItems.map((subItem, j) => (
                             <motion.button
                               key={j}
                               className="block w-full text-left py-3 px-4 
-                              text-white/80 hover:text-white text-base font-normal
-                              rounded-lg hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5
-                              hover:backdrop-blur-md transition-all duration-300
-                              border border-white/10 hover:border-white/20
+                              text-white/80 hover:text-black text-base font-normal
+                              rounded-lg hover:bg-white
+                              transition-all duration-300
                               hover:scale-[1.02] active:scale-[0.98]"
-                              onClick={() => handleNavClick(item, subItem)}
+                              onClick={() => handleNavClick(navigationItems[selectedMenuItem], subItem)}
                               whileHover={{ scale: 1.02, x: 5 }}
                               whileTap={{ scale: 0.98 }}
-                              initial={{ x: -20, opacity: 0 }}
+                              initial={{ x: 20, opacity: 0 }}
                               animate={{ x: 0, opacity: 1 }}
                               transition={{ delay: j * 0.1 }}
                             >
@@ -535,9 +682,21 @@ hover:scale-[1.02] active:scale-[0.98]"
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </motion.div>
-                ))}
-              </motion.nav>
+                    
+                    {selectedMenuItem === null && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex items-center justify-center h-full min-h-[200px]"
+                      >
+                        <p className="text-white/60 text-center text-lg">
+                          Select a menu item to see its options
+                        </p>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

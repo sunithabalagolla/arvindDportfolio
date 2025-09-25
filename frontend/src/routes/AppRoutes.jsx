@@ -10,6 +10,10 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import Dashboard from "../pages/auth/Dashboard";
 import Time from "../pages/About/Time";
+import MyViewPage from "../pages/MyViewPage/MyViewPage";
+import NewsPage from "../pages/PressPage/NewsPage";
+import GetInTouchPage from "../pages/Getintouch/GetInTouchPage";
+import NewsletterPage from "../pages/NewsLetters/NewsletterPage";
 
 
 
@@ -29,24 +33,57 @@ import Time from "../pages/About/Time";
 // import VolunteerDashboard from "../pages/VolunteerDashboard";
 // import Events from "../pages/Events";
 // import Contact from "../pages/Contact";
-// import Login from "../pages/Login";
-// import Signup from "../pages/Signup";
+
 
 function AppRoutes() {
   return (
     <Routes>
       {/* Main Pages */}
-      <Route path="/" element={<Home/>} />
-<Route path="/arvind-details" element={<ArvindProfileDetails></ArvindProfileDetails>}/>
-<Route path="/volunteer/opportunities"  element={<AllOpportunities></AllOpportunities>}/>
-<Route  path="/volunteer/opportunity/:id" element={<OpportunityDetails></OpportunityDetails>}/>
-<Route path="/volunteer/join/:id" element={<JoinEvent></JoinEvent>} />
+      <Route path="/" element={<Home />} />
+      <Route path="/arvind-details" element={<ArvindProfileDetails></ArvindProfileDetails>} />
+      <Route path="/volunteer/opportunities" element={<AllOpportunities></AllOpportunities>} />
+      <Route path="/volunteer/opportunity/:id" element={<OpportunityDetails></OpportunityDetails>} />
+      <Route path="/volunteer/join/:id" element={<JoinEvent></JoinEvent>} />
 
-<Route  path="/event/:id" element={<EventDetails/>} />
+      <Route path="/event/:id" element={<EventDetails />} />
 
-{/* ---------about */}
-  <Route path="/about/timeline" element={<Time />} />
-  
+      {/* ---------about */}
+      <Route path="/about/timeline" element={<Time />} />
+
+
+      {/* ------view------ */}
+      <Route path="/view/Quotes" element={<MyViewPage />} />
+      <Route path="/view/Articles" element={<MyViewPage />} />
+      <Route path="/view/Blogs" element={<MyViewPage />} />
+
+
+ 
+      {/* News Routes */}
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/news/AllNews" element={<NewsPage />} />
+          <Route path="/news/PressRelease" element={<NewsPage/>} />
+          <Route path="/news/NewsCoverage" element={<NewsPage />} />
+          <Route path="/news/Interviews" element={<NewsPage />} />
+          <Route path="/news/Announcements" element={<NewsPage />} />
+          
+          {/* Default redirect to All News when accessing /news */}
+          <Route path="/news/*" element={<NewsPage />} />
+
+
+          {/* -----------get in touch----- */}
+          <Route path="/getintouch/contact" element={<GetInTouchPage />} />
+             <Route path="/getintouch/writetoar" element={<GetInTouchPage />} />
+
+ {/* ------------newsletter-------- */}
+
+   <Route path="/newsletter/Recent" element={<NewsletterPage />} />
+   <Route path="/newsletter/Archives" element={<NewsletterPage />} />
+   <Route path="/newsletter/Subscriptions" element={<NewsletterPage />} />
+   <Route path="/newsletter/Create" element={<NewsletterPage />} />
+
+
+
+
       {/* <Route path="/about" element={<About />} />
     
       <Route path="/about/foundation" element={<Foundation />} />
@@ -70,9 +107,9 @@ function AppRoutes() {
       <Route path="/contact" element={<Contact />} /> */}
 
       {/* Auth */}
-       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup/>} /> 
-         <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
 }
