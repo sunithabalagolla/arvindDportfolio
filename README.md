@@ -103,7 +103,6 @@ src/
 
 //backend
 
-
 backend/
 ├── config/
 │   ├── database.js      # Sets up the MongoDB connection to store users and OTPs.
