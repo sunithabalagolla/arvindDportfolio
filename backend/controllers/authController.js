@@ -44,8 +44,9 @@ const registerUser = async (req, res) => {
             email, 
             'signup', 
             req.ip || req.connection.remoteAddress,
-            req.get('User-Agent')
+            req.get('User-Agent'),otpCode
         );
+        
         
         // Send OTP email
         await sendOTPEmail(email, otpCode, 'signup', firstName);
@@ -206,7 +207,7 @@ const loginWithOTP = async (req, res) => {
             email, 
             'login', 
             req.ip || req.connection.remoteAddress,
-            req.get('User-Agent')
+            req.get('User-Agent'), otpCode
         );
         
         // Send OTP email
@@ -460,7 +461,7 @@ const forgotPassword = async (req, res) => {
             email, 
             'password-reset', 
             req.ip || req.connection.remoteAddress,
-            req.get('User-Agent')
+            req.get('User-Agent'), otpCode
         );
         
         // Send password reset email

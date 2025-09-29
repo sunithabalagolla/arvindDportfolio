@@ -109,7 +109,7 @@ router.post('/test', (req, res) => {
             timestamp: new Date().toISOString()
         }
     });
-});
+}); 
 
 /**
  * @route   GET /api/otp/health

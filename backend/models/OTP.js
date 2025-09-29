@@ -95,14 +95,15 @@ otpSchema.statics.generateOTP = function() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+
 // Static method to create new OTP
-otpSchema.statics.createOTP = async function(email, purpose = 'signup', ipAddress = null, userAgent = null) {
+otpSchema.statics.createOTP = async function(email, purpose = 'signup', ipAddress = null, userAgent = null, providedOtpCode = null) {
     try {
         // Delete any existing OTPs for this email and purpose
         await this.deleteMany({ email, purpose });
         
-        // Generate new OTP
-        const otpCode = this.generateOTP().toString();
+        // Use provided OTP code or generate new one
+        const otpCode = providedOtpCode || this.generateOTP().toString();
         
         // Set expiration time
         const expiresInMinutes = parseInt(process.env.OTP_EXPIRES_IN) || 10;

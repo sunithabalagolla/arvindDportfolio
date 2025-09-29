@@ -330,7 +330,7 @@ const resendOTP = async (req, res) => {
             email, 
             purpose, 
             req.ip || req.connection.remoteAddress,
-            req.get('User-Agent')
+            req.get('User-Agent'), otpCode
         );
         
         // Send OTP email

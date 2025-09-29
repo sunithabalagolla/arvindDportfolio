@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
+
     firstName: {
         type: String,   
         required: [true, 'First name is required'],
@@ -9,6 +10,7 @@ const userSchema = new mongoose.Schema({
         minlength: [2, 'First name must be at least 2 characters'],
         maxlength: [50, 'First name cannot exceed 50 characters']
     },
+
     email: {
         type: String,
         required: [true, 'Email is required'],
@@ -20,12 +22,14 @@ const userSchema = new mongoose.Schema({
             'Please provide a valid email address'
         ]
     },
+
     password: {
         type: String,
         required: [true, 'Password is required'],
         minlength: [6, 'Password must be at least 6 characters'],
         select: false // Don't return password in queries by default
     },
+
     isVerified: {
         type: Boolean,
         default: false
@@ -34,23 +38,28 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+
     role: {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
     },
+
     lastLogin: {
         type: Date,
         default: null
     },
+
     loginAttempts: {
         type: Number,
         default: 0
     },
+
     lockUntil: {
         type: Date,
         default: null
     }
+    
 }, {
     timestamps: true, // Adds createdAt and updatedAt automatically
     versionKey: false // Removes __v field

@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
 import Header from "./components/common/Header";
 import Footer from "./components/common/footer";
@@ -8,8 +9,14 @@ import "./App.css";
 function AppContent() {
   const location = useLocation();
 
-  // Pages with NO header/footer
-  const noHeaderFooterPages = ["/login", "/signup"];
+  // Pages with NO header/footer (add auth pages)
+  const noHeaderFooterPages = [
+    "/login", 
+    "/signup", 
+    "/auth/login", 
+    "/auth/signup", 
+    "/auth/otp-verification"
+  ];
 
   // Pages with transparent header (home page)
   const transparentHeaderPages = ["/"];
@@ -41,9 +48,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 

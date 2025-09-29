@@ -17,22 +17,7 @@ import NewsletterPage from "../pages/NewsLetters/NewsletterPage";
 
 
 
-// import About from "../pages/About/About";
-// import Timeline from "../pages/About/Timeline";
-// import Foundation from "../pages/About/Foundation";
-// import MyView from "../pages/MyView/MyView";
-// import Quotes from "../pages/MyView/Quotes";
-// import Articles from "../pages/MyView/Articles";
-// import Blogs from "../pages/MyView/Blogs";
-// import Press from "../pages/Press/Press";
-// import GetInTouch from "../pages/GetInTouch/GetInTouch";
-// import Newsletter from "../pages/Newsletter/Newsletter";
-// import News from "../pages/News/News";
-// import NewsList from "../pages/News/NewsList";
-// import GalleryPage from "../pages/GalleryPage";
-// import VolunteerDashboard from "../pages/VolunteerDashboard";
-// import Events from "../pages/Events";
-// import Contact from "../pages/Contact";
+
 
 
 function AppRoutes() {
@@ -84,28 +69,7 @@ function AppRoutes() {
 
 
 
-      {/* <Route path="/about" element={<About />} />
-    
-      <Route path="/about/foundation" element={<Foundation />} />
-
-      <Route path="/myview" element={<MyView />} />
-      <Route path="/myview/quotes" element={<Quotes />} />
-      <Route path="/myview/articles" element={<Articles />} />
-      <Route path="/myview/blogs" element={<Blogs />} />
-
-      <Route path="/press" element={<Press />} />
-      <Route path="/getintouch" element={<GetInTouch />} />
-
-      <Route path="/newsletter" element={<Newsletter />} />
-
-      <Route path="/news" element={<News />} />
-      <Route path="/news/all" element={<NewsList />} />
-
-      <Route path="/gallery" element={<GalleryPage />} />
-      <Route path="/volunteer" element={<VolunteerDashboard />} />
-      <Route path="/events" element={<Events />} />
-      <Route path="/contact" element={<Contact />} /> */}
-
+     
       {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />

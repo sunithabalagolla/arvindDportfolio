@@ -152,4 +152,10 @@ router.get('/verify-token', authenticate, checkTokenExpiry, (req, res) => {
     });
 });
 
+// Test route - add this after imports
+router.get('/test', (req, res) => {
+    res.json({ success: true, message: 'Auth routes working!' });
+});
+
 module.exports = router;
+
