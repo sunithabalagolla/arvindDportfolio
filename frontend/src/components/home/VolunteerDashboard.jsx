@@ -3,8 +3,14 @@ import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin } from 'lucide-react
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import image1 from '../../assets/images/VolunteerDashboard/VolunteerDashboard-img1.png';
 import image2 from '../../assets/images/VolunteerDashboard/VolunteerDashboard-img2.png';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
+
 
 export default function VolunteerDashboard() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Sample volunteer opportunities data
@@ -91,14 +97,36 @@ export default function VolunteerDashboard() {
     console.log(`Navigate to opportunity: ${opportunity.id}`);
   };
 
+
+
+
   const handleViewAllClick = () => {
-    console.log('Navigate to all opportunities');
+    navigate('/volunteer/opportunities');
   };
+
+  
 
   const handleJoinEvent = (e, opportunity) => {
     e.stopPropagation();
-    console.log(`Join event: ${opportunity.id}`);
+    
+    // Check if user is logged in
+    if (!isAuthenticated) {
+      // Redirect to login with return URL
+      navigate('/auth/login', { 
+        state: { 
+          from: `/volunteer/join/${opportunity.id}`,
+          message: 'Please login to join this event' 
+        } 
+      });
+      return;
+    }
+    
+    // Navigate to join event page
+    navigate(`/volunteer/join/${opportunity.id}`, {
+      state: { opportunity }
+    });
   };
+
 
   // Circular Progress Component - Pie Chart Style
   const CircularProgress = ({ joined, total }) => {
