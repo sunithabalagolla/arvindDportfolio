@@ -13,9 +13,10 @@ import { useLocation } from 'react-router-dom';
 import { Search, TrendingUp, Clock, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo/logo.png";
+import { useAuth } from '../../context/AuthContext';
 
 function Header({ forceOrangeBackground = false }) {
-
+  const { isAuthenticated, user } = useAuth();
   const location = useLocation();
   const isDashboardPage = location.pathname === '/dashboard' || location.pathname.includes('/dashboard');
 
@@ -125,12 +126,12 @@ function Header({ forceOrangeBackground = false }) {
     {
       name: "  Press",
       href: "/press",
-       subItems: [
+      subItems: [
         { name: "All News", href: "/news/AllNews" },
         { name: "Press Release", href: "/news/PressRelease" },
         { name: "News Coverage", href: "/news/NewsCoverage" },
-        {name:"Interviews",href:"/news/Interviews"},
-        {name:"Announcements",href:"/news/Announcements"}
+        { name: "Interviews", href: "/news/Interviews" },
+        { name: "Announcements", href: "/news/Announcements" }
       ]
     },
     {
@@ -139,22 +140,22 @@ function Header({ forceOrangeBackground = false }) {
       subItems: [
         { name: "Contact", href: "/getintouch/contact" },
         { name: "Write to AR", href: "/getintouch/writetoar" },
-       
+
       ]
     },
     {
-    name:"Donation",
-    href:"https://pmcares.gov.in/en/web/contribution/donate_india",
-    subItems:null
+      name: "Donation",
+      href: "https://pmcares.gov.in/en/web/contribution/donate_india",
+      subItems: null
     },
     {
       name: "Newsletter",
       href: "/newsletter",
       subItems: [
-        {name:'Recent Issues',href:"/newsletter/Recent"},
-        {name:'Archives',href:"/newsletter/Archives"},
-        {name:'Subscriptions',href:"/newsletter/Subscriptions"},
-        {name:'Create',href:"/newsletter/Create"}
+        { name: 'Recent Issues', href: "/newsletter/Recent" },
+        { name: 'Archives', href: "/newsletter/Archives" },
+        { name: 'Subscriptions', href: "/newsletter/Subscriptions" },
+        { name: 'Create', href: "/newsletter/Create" }
       ]
     }
   ];
@@ -277,13 +278,17 @@ border-t border-b border-l border-white/60
           </motion.button>
 
           {/* Login/Signup - Desktop only */}
-          <motion.button onClick={handleLoginClick} // Add this
+          {/* Login/Signup - Desktop only */}
+          <motion.button
+            onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
             className={`${textButtonClasses} hidden lg:flex`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <FaUser className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
-            <span className={`${scrolled ? 'text-white' : 'text-white/90'} whitespace-nowrap transition-all duration-300`}>Login/Signup</span>
+            <span className={`${scrolled ? 'text-white' : 'text-white/90'} whitespace-nowrap transition-all duration-300`}>
+              {isAuthenticated ? user?.firstName || 'Dashboard' : 'Login/Signup'}
+            </span>
           </motion.button>
 
           {/* Language Dropdown - Desktop only */}
@@ -404,7 +409,7 @@ border-t border-b border-l border-white/60
                   <div className="space-y-3 mb-6">
                     {/* Login/Signup for mobile */}
                     <motion.button
-                      onClick={handleLoginClick}
+                     onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
                       className="w-full flex items-center justify-start 
                       h-12 px-4 rounded-xl 
                       bg-gradient-to-r from-white/15 via-white/12 to-white/8 
@@ -421,7 +426,7 @@ border-t border-b border-l border-white/60
                       whileTap={{ scale: 0.98 }}
                     >
                       <FaUser className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
-                      <span className="text-white/90 font-medium transition-all duration-300">Login / Signup</span>
+                      <span className="text-white/90 font-medium transition-all duration-300">{isAuthenticated ? user?.firstName || 'Dashboard' : 'Login / Signup'}</span>
                     </motion.button>
 
                     {/* Language for mobile */}
@@ -498,10 +503,10 @@ border-t border-b border-l border-white/60
                               className={`w-full text-left py-3 md:py-4 px-3 md:px-4 text-base md:text-lg font-medium
                               rounded-lg md:rounded-xl transition-all duration-300 group cursor-pointer
                               flex items-center justify-between
-                              ${selectedMenuItem === i 
-                                ? 'bg-white text-black shadow-lg' 
-                                : 'text-white/90 hover:text-black hover:bg-white'
-                              }
+                              ${selectedMenuItem === i
+                                  ? 'bg-white text-black shadow-lg'
+                                  : 'text-white/90 hover:text-black hover:bg-white'
+                                }
                               hover:scale-[1.02] active:scale-[0.98]`}
                               onClick={() => {
                                 if (item.subItems) {
@@ -566,7 +571,7 @@ border-t border-b border-l border-white/60
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      
+
                       {selectedMenuItem === null && (
                         <motion.div
                           initial={{ opacity: 0 }}
@@ -614,10 +619,10 @@ border-t border-b border-l border-white/60
                             className={`w-full text-left py-4 px-6 text-lg font-medium
                             rounded-xl transition-all duration-300 group cursor-pointer
                             flex items-center justify-between
-                            ${selectedMenuItem === i 
-                              ? 'bg-white text-black shadow-lg' 
-                              : 'text-white/90 hover:text-black hover:bg-white'
-                            }
+                            ${selectedMenuItem === i
+                                ? 'bg-white text-black shadow-lg'
+                                : 'text-white/90 hover:text-black hover:bg-white'
+                              }
                             hover:scale-[1.02] active:scale-[0.98]`}
                             onClick={() => {
                               if (item.subItems) {
@@ -682,7 +687,7 @@ border-t border-b border-l border-white/60
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    
+
                     {selectedMenuItem === null && (
                       <motion.div
                         initial={{ opacity: 0 }}

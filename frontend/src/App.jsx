@@ -15,10 +15,13 @@ function AppContent() {
     "/signup", 
     "/auth/login", 
     "/auth/signup", 
-    "/auth/otp-verification"
+    "/auth/otp-verification",
+    "/auth/forgot-password",    // Add this
+    "/auth/reset-password",     // Add this
+    "/auth/dashboard"
   ];
 
-  // Pages with transparent header (home page)
+  // Pages(home page) with transparent header 
   const transparentHeaderPages = ["/"];
 
   const showHeaderFooter = !noHeaderFooterPages.includes(location.pathname);
@@ -57,3 +60,11 @@ function App() {
 }
 
 export default App;
+
+// AuthProvider → Gives login/logout/user to all components.
+// Router → Handles page navigation without reload.
+// useLocation → Checks current URL path.
+// Hide Header/Footer → On /login, /signup, /auth/* pages.
+// Transparent Header → Only on homepage (/).
+// Orange Header → On all other pages.
+// AppRoutes → Decides which page to show.

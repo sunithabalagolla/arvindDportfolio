@@ -43,7 +43,7 @@ router.use(sanitizeInput);
  * @desc    Register new user
  * @access  Public
  */
-router.post('/register', validateRegistration, registerUser);
+router.post('/signup', validateRegistration, registerUser);
 
 /**
  * @route   POST /api/auth/login

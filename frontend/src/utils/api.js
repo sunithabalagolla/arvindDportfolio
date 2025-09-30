@@ -9,6 +9,7 @@ const api = axios.create({
     timeout: 10000, // 10 seconds
 });
 
+
 // Request interceptor - Add token to requests
 api.interceptors.request.use(
     (config) => {
@@ -42,7 +43,7 @@ api.interceptors.response.use(
             }
 
             // Return error message from server
-            return Promise.reject(data.message || 'An error occurred');
+           return Promise.reject(data?.message || data?.error || 'An error occurred');
         } else if (error.request) {
             // Request made but no response
             return Promise.reject('Network error. Please check your connection.');
@@ -57,7 +58,7 @@ api.interceptors.response.use(
 export const authAPI = {
     // Register new user
     register: async (userData) => {
-        return await api.post('/auth/register', userData);
+        return await api.post('/auth/signup', userData);
     },
 
     // Login with email and password
