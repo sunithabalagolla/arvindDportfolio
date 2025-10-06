@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin } from 'lucide-react';
 
 export default function EventCalendar() {
-    // Note: In your actual app, uncomment this and import from 'react-router-dom':
     const navigate = (path) => console.log('Navigate to:', path);
 
     const events = [
@@ -15,8 +14,9 @@ export default function EventCalendar() {
             location: "Dharmapuri Community Center",
             month: "June",
             day: "15",
-            monthAbbr: "Jun",
-            image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=250&fit=crop"
+            monthAbbr: "Sep",
+            image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=250&fit=crop",
+            color: "#81C784"
         },
         {
             id: 2,
@@ -27,8 +27,9 @@ export default function EventCalendar() {
             location: "Dharmapuri Community Center",
             month: "April",
             day: "23",
-            monthAbbr: "Apr",
-            image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=250&fit=crop"
+            monthAbbr: "Sep",
+            image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=250&fit=crop",
+            color: "#FFB74D"
         },
         {
             id: 3,
@@ -39,8 +40,9 @@ export default function EventCalendar() {
             location: "Dharmapuri Community Center",
             month: "May",
             day: "12",
-            monthAbbr: "May",
-            image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=250&fit=crop"
+            monthAbbr: "Oct",
+            image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=250&fit=crop",
+            color: "#4DB6AC"
         },
         {
             id: 4,
@@ -51,8 +53,9 @@ export default function EventCalendar() {
             location: "Dharmapuri Community Center",
             month: "September",
             day: "28",
-            monthAbbr: "Sep",
-            image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop"
+            monthAbbr: "Aug",
+            image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop",
+            color: "#FFB74D"
         },
         {
             id: 5,
@@ -64,7 +67,8 @@ export default function EventCalendar() {
             month: "August",
             day: "18",
             monthAbbr: "Aug",
-            image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=250&fit=crop"
+            image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=250&fit=crop",
+            color: "#81C784"
         },
         {
             id: 6,
@@ -76,7 +80,8 @@ export default function EventCalendar() {
             month: "July",
             day: "16",
             monthAbbr: "Jul",
-            image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400&h=250&fit=crop"
+            image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400&h=250&fit=crop",
+            color: "#4DB6AC"
         },
         {
             id: 7,
@@ -88,7 +93,8 @@ export default function EventCalendar() {
             month: "October",
             day: "24",
             monthAbbr: "Oct",
-            image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=250&fit=crop"
+            image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=250&fit=crop",
+            color: "#FFB74D"
         },
         {
             id: 8,
@@ -100,12 +106,13 @@ export default function EventCalendar() {
             month: "November",
             day: "22",
             monthAbbr: "Nov",
-            image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=250&fit=crop"
+            image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=250&fit=crop",
+            color: "#81C784"
         }
     ];
 
     const [currentPage, setCurrentPage] = useState(0);
-    const [selectedMonth, setSelectedMonth] = useState('All');
+    const [selectedMonth, setSelectedMonth] = useState('August');
     const [eventsPerPage, setEventsPerPage] = useState(4);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -119,23 +126,18 @@ export default function EventCalendar() {
         const updateEventsPerPage = () => {
             const width = window.innerWidth;
             if (width < 640) {
-                // Mobile phones (including iPhone)
                 setEventsPerPage(1);
                 setIsMobile(true);
             } else if (width >= 640 && width < 768) {
-                // Small tablets
                 setEventsPerPage(2);
                 setIsMobile(false);
             } else if (width >= 768 && width < 1024) {
-                // Tablets (iPad, etc.)
                 setEventsPerPage(2);
                 setIsMobile(false);
             } else if (width >= 1024 && width < 1280) {
-                // Small desktop/large tablets
                 setEventsPerPage(3);
                 setIsMobile(false);
             } else {
-                // Desktop
                 setEventsPerPage(4);
                 setIsMobile(false);
             }
@@ -152,8 +154,8 @@ export default function EventCalendar() {
         currentPage * eventsPerPage,
         (currentPage + 1) * eventsPerPage
     );
+    
     const handleCardClick = (eventId) => {
-        // Navigate to event details page with the event ID
         navigate(`/event/${eventId}`);
     };
 
@@ -163,9 +165,8 @@ export default function EventCalendar() {
         alert(`Notification set for event ${eventId}`);
     };
 
-
     const handleLearnMoreClick = (e, eventId) => {
-        e.stopPropagation(); // Prevent card click navigation
+        e.stopPropagation();
         navigate(`/event/${eventId}`);
     };
 
@@ -183,152 +184,130 @@ export default function EventCalendar() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6">
+        <div className="min-h-screen bg-white py-12 px-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-6 sm:mb-8 md:mb-12 relative">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 px-2">
-                        Event Calendar
-                    </h2>
-                    <div className="w-16 sm:w-20 md:w-24 h-1 bg-orange-500 mx-auto"></div>
+                <div className="text-center mb-12 relative">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3">
+          Event Calender
+          </h2>
+          <div className="w-16 sm:w-20 md:w-24 h-1 mx-auto rounded-full" style={{ background: '#FB8B35' }}></div>
                     
-                    {/* Month Filter Dropdown - Responsive positioning */}
-                    <div className="flex justify-center sm:justify-end mt-4 sm:mt-0 sm:absolute sm:top-0 sm:right-0">
-                        <div className="relative">
-                            <select
-                                value={selectedMonth}
-                                onChange={(e) => handleMonthChange(e.target.value)}
-                                className="appearance-none bg-orange-500 hover:bg-orange-600 
-                         text-white font-semibold py-2 px-3 sm:py-2.5 sm:px-4 md:py-3 md:px-6 
-                         rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg 
-                         text-sm sm:text-sm md:text-base cursor-pointer 
-                         focus:outline-none focus:ring-2 focus:ring-orange-300
-                         min-w-[100px] sm:min-w-[120px] md:min-w-[140px]
-                         pr-8 sm:pr-10"
-                            >
-                                {months.map((month) => (
-                                    <option key={month} value={month} className="bg-white text-gray-700">
-                                        {month}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <ChevronRight className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 rotate-90 
-                                        w-4 h-4 text-white pointer-events-none" />
-                        </div>
+                    {/* Month Filter Dropdown - Top Right */}
+                    <div className="absolute top-0 right-0">
+                        <select
+                            value={selectedMonth}
+                            onChange={(e) => handleMonthChange(e.target.value)}
+                            className="appearance-none bg-white text-gray-700 font-medium 
+                            py-2.5 px-5 pr-10 rounded-lg border-2 border-gray-300
+                            cursor-pointer focus:outline-none focus:border-gray-400
+                            text-base shadow-sm hover:border-gray-400 transition-colors"
+                        >
+                            {months.map((month) => (
+                                <option key={month} value={month}>
+                                    {month}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronRight className="absolute right-3 top-1/2 transform -translate-y-1/2 rotate-90 
+                                    w-5 h-5 text-gray-600 pointer-events-none" />
                     </div>
                     
-                    {/* Paragraph - centered */}
-                    <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4 mt-4">
+                    <p className="text-base text-gray-600 max-w-3xl mx-auto">
                         Stay updated with all upcoming events, workshops, and gatherings in one place.
                     </p>
                 </div>
 
                 {/* Event Cards Container */}
-                <div className="relative px-2 sm:px-4 md:px-6 lg:px-8">
-                    {/* Navigation Arrows - Adjusted for mobile */}
+                <div className="relative px-12">
+                    {/* Navigation Arrows */}
                     {totalPages > 1 && (
                         <>
                             <button
                                 onClick={prevPage}
-                                className="absolute left-0 sm:left-0 md:-left-4 top-1/2 transform -translate-y-1/2 
-                          z-10 bg-white rounded-full p-2 sm:p-2.5 md:p-3 
-                          shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-200 
-                          border border-gray-200 sm:border-2 hover:border-orange-300
-                          opacity-90 sm:opacity-100"
+                                className="absolute -left-2 top-1/2 transform -translate-y-1/2 
+                                z-10 transition-all duration-300 hover:scale-125"
                             >
-                                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-600" />
+                                <ChevronLeft className="w-10 h-10" style={{ color: '#FB8B35' }} strokeWidth={2.5} />
                             </button>
 
                             <button
                                 onClick={nextPage}
-                                className="absolute right-0 sm:right-0 md:-right-4 top-1/2 transform -translate-y-1/2 
-                          z-10 bg-white rounded-full p-2 sm:p-2.5 md:p-3 
-                          shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-200 
-                          border border-gray-200 sm:border-2 hover:border-orange-300
-                          opacity-90 sm:opacity-100"
+                                className="absolute -right-2 top-1/2 transform -translate-y-1/2 
+                                z-10 transition-all duration-300 hover:scale-125"
                             >
-                                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-600" />
+                                <ChevronRight className="w-10 h-10" style={{ color: '#FB8B35' }} strokeWidth={2.5} />
                             </button>
                         </>
                     )}
 
-                    {/* Event Cards Grid - Responsive layout */}
-                    <div className={`grid gap-4 sm:gap-5 md:gap-6 
-                          ${isMobile ? 'px-8' : 'px-0 sm:px-4 md:px-6 lg:px-8'}
-                          grid-cols-1 
-                          sm:grid-cols-2 
-                          lg:grid-cols-3 
-                          xl:grid-cols-4`}>
+                    {/* Event Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {currentEvents.map((event) => (
                             <div
                                 key={event.id}
                                 onClick={() => handleCardClick(event.id)}
-                                className="bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl sm:hover:shadow-2xl 
-                          transform hover:-translate-y-1 sm:hover:-translate-y-2 
-                          transition-all duration-300 overflow-hidden cursor-pointer 
-                          border border-gray-100 sm:border-2 hover:border-orange-200"
+                                className="bg-white rounded-3xl shadow-md hover:shadow-xl 
+                                transform hover:-translate-y-1 transition-all duration-300 
+                                cursor-pointer border-2"
+                                style={{ borderColor: event.color }}
                             >
-                                {/* Date Badge - Attached to left border */}
-                                <div className="relative">
+                                {/* Image with Date Badge */}
+                                <div className="relative m-4 overflow-hidden rounded-t-2xl">
                                     <img
                                         src={event.image}
                                         alt={event.title}
-                                        className="w-full h-40 sm:h-44 md:h-48 object-cover"
+                                        className="w-full h-48 object-cover rounded-t-2xl"
                                     />
-                                    <div className="absolute top-0 left-0 
-                                bg-black bg-opacity-80 text-white 
-                                rounded-br-lg px-3 py-2 sm:px-4 sm:py-3 text-center
-                                min-w-[60px] sm:min-w-[70px]">
-                                        <div className="text-xs font-medium opacity-90 leading-none">{event.monthAbbr}</div>
-                                        <div className="text-lg sm:text-xl md:text-2xl font-bold leading-none mt-1">{event.day}</div>
+                                    <div className="absolute top-0 left-0 bg-gray-800 text-white 
+                                    rounded-br-xl px-3 py-2 text-center shadow-lg min-w-[60px]">
+                                        <div className="text-xs font-medium uppercase">{event.monthAbbr}</div>
+                                        <div className="text-2xl font-bold mt-0.5">{event.day}</div>
                                     </div>
                                 </div>
 
                                 {/* Card Content */}
-                                <div className="p-4 sm:p-5 md:p-6">
-                                    <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-1.5 sm:mb-2 line-clamp-1">
+                                <div className="px-5 pb-5">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-1">
                                         {event.title}
                                     </h3>
-                                    <p className="text-orange-600 font-medium text-sm sm:text-base mb-3 sm:mb-4">
+                                    <p className="text-gray-600 text-sm mb-4">
                                         {event.type}
                                     </p>
 
-                                    <div className="space-y-2 sm:space-y-2.5 md:space-y-3">
-                                        <div className="flex items-start sm:items-center text-gray-600 text-xs sm:text-sm">
-                                            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 sm:mr-3 flex-shrink-0 mt-0.5 sm:mt-0" />
-                                            <span className="line-clamp-1">{event.date}</span>
+                                    <div className="space-y-2.5 mb-5">
+                                        <div className="flex items-center text-gray-700 text-sm">
+                                            <Calendar className="w-4 h-4 mr-3 flex-shrink-0" />
+                                            <span>{event.date}</span>
                                         </div>
 
-                                        <div className="flex items-start sm:items-center text-gray-600 text-xs sm:text-sm">
-                                            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 sm:mr-3 flex-shrink-0 mt-0.5 sm:mt-0" />
-                                            <span className="line-clamp-1">{event.time}</span>
+                                        <div className="flex items-center text-gray-700 text-sm">
+                                            <Clock className="w-4 h-4 mr-3 flex-shrink-0" />
+                                            <span>{event.time}</span>
                                         </div>
 
-                                        <div className="flex items-start sm:items-center text-gray-600 text-xs sm:text-sm">
-                                            <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 sm:mr-3 flex-shrink-0 mt-0.5 sm:mt-0" />
-                                            <span className="line-clamp-2 sm:line-clamp-1">{event.location}</span>
+                                        <div className="flex items-center text-gray-700 text-sm">
+                                            <MapPin className="w-4 h-4 mr-3 flex-shrink-0" />
+                                            <span>{event.location}</span>
                                         </div>
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-5 md:mt-6">
+                                    <div className="flex gap-3">
                                         <button
                                             onClick={(e) => handleNotifyClick(e, event.id)}
                                             className="flex-1 bg-orange-500 hover:bg-orange-600 
-                                text-white font-medium py-2 sm:py-2.5 md:py-3 
-                                rounded-md sm:rounded-lg transition-colors duration-200
-                                text-xs sm:text-sm active:scale-95"
+                                            text-white font-medium py-2.5 rounded-xl 
+                                            transition-colors duration-200 text-sm shadow-sm"
                                         >
                                             Notify Me
                                         </button>
                                         <button
                                             onClick={(e) => handleLearnMoreClick(e, event.id)}
-                                            className="flex-1 border border-gray-300 sm:border-2 
-                                hover:border-gray-400 text-gray-700 font-medium 
-                                py-2 sm:py-2.5 md:py-3 rounded-md sm:rounded-lg 
-                                transition-colors duration-200 text-xs sm:text-sm
-                                active:scale-95 bg-white"
+                                            className="flex-1 border-2 border-gray-300 
+                                            hover:border-gray-400 text-gray-700 font-medium 
+                                            py-2.5 rounded-xl transition-colors duration-200 
+                                            text-sm bg-white"
                                         >
                                             Learn More
                                         </button>
@@ -339,27 +318,10 @@ export default function EventCalendar() {
                     </div>
                 </div>
 
-                {/* Pagination Dots */}
-                {totalPages > 1 && (
-                    <div className="flex justify-center mt-8 sm:mt-10 md:mt-12 space-x-1.5 sm:space-x-2">
-                        {Array.from({ length: totalPages }).map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentPage(index)}
-                                className={`w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-200 
-                          ${currentPage === index
-                                        ? 'bg-orange-500 w-6 sm:w-7 md:w-8'
-                                        : 'bg-gray-300 hover:bg-gray-400'}`}
-                                aria-label={`Go to page ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-                )}
-
                 {/* No Events Message */}
                 {filteredEvents.length === 0 && (
-                    <div className="text-center py-8 sm:py-10 md:py-12 px-4">
-                        <p className="text-base sm:text-lg md:text-xl text-gray-600">
+                    <div className="text-center py-12">
+                        <p className="text-xl text-gray-600">
                             No events found for {selectedMonth}.
                         </p>
                     </div>

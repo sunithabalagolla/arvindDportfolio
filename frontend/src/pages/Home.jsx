@@ -4,7 +4,7 @@ import Carousel from "../components/home/Carousel";
 import ArvindProfile from "../components/home/ArvindProfile";
 import NewsCarousel from "../components/home/NewsCarousel";
 import PromisesScroll from "../components/home/PromisesScroll";
-import Gallery from "../components/home/Gallery";
+import GalleryPreview from '../components/home/Gallery';
 import VolunteerDashboard from "../components/home/VolunteerDashboard";
 import ArvindFoundationCarousel from "../components/home/ArvindFoundationCarousel";
 import EventCalendar from "../components/home/EventCalendar";
@@ -33,7 +33,7 @@ function Home() {
            <ArvindProfile></ArvindProfile>
            <NewsCarousel></NewsCarousel>
            <PromisesScroll></PromisesScroll>
-        <Gallery></Gallery>
+       <GalleryPreview />
         <VolunteerDashboard></VolunteerDashboard>
         <ArvindFoundationCarousel></ArvindFoundationCarousel>
         <EventCalendar></EventCalendar>

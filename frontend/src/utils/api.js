@@ -125,6 +125,24 @@ export const otpAPI = {
     },
 };
 
+
+export const volunteerAPI = {
+    // Join an event
+    joinEvent: async (eventId, eventData) => {
+        return await api.post(`/volunteer/join-event/${eventId}`, eventData);
+    },
+    
+    // Get user's joined events
+    getMyEvents: async () => {
+        return await api.get('/volunteer/my-events');
+    },
+
+    // Add this
+  leaveEvent: async (eventId) => {
+    return await api.delete(`/volunteer/leave-event/${eventId}`);
+  }
+};
+
 // Helper functions
 export const setAuthToken = (token) => {
     if (token) {
@@ -145,5 +163,15 @@ export const removeAuthToken = () => {
     localStorage.removeItem('user');
     delete api.defaults.headers.common['Authorization'];
 };
+
+// export const volunteerAPI = {
+//     joinEvent: async (eventId) => {
+//         return await api.post(`/volunteer/join-event/${eventId}`);
+//     },
+    
+//     getJoinedEvents: async () => {
+//         return await api.get('/volunteer/my-events');
+//     }
+// };
 
 export default api;

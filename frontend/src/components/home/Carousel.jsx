@@ -99,8 +99,36 @@ function Carousel() {
                     <p className=" font-['Hind_Siliguri'] text-xs font-normal sm:text-base md:text-base leading-relaxed mb-4 text-[#FAFAFA] drop-shadow-md">
                       {slide.paragraph}
                     </p>
-                        <button className="bg-[#FB8B35] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 lg:px-8 lg:py-2.5 sm:text-sm lg:text-base rounded-lg  hover:bg-white 
-    hover:text-[#FB8B35] transition">Know More</button>
+                    <div className="flex justify-center sm:justify-center lg:justify-start w-full">
+                      <button
+
+                        className="group relative w-[140px] sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 
+               bg-[#FB8B35] text-white text-xs sm:text-sm md:text-base font-semibold 
+               rounded-lg border-2 border-[#FB8B35]
+               hover:bg-white hover:text-[#FB8B35]
+               shadow-md sm:shadow-lg hover:shadow-2xl hover:shadow-[#FB8B35]/30
+               transform hover:-translate-y-1 active:translate-y-0
+               transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 
+               overflow-hidden"
+                      >
+                        {/* Animated Background Slide */}
+                        <span className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+
+                        {/* Button Text */}
+                        <span className="relative z-10 font-bold">Know More</span>
+
+                        {/* SVG Arrow */}
+                        <svg
+                          className="w-3 h-3 sm:w-4 sm:h-4 relative z-10 group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+
                   </div>
 
                 ) : (
@@ -112,10 +140,40 @@ function Carousel() {
                     <p className=" font-['Hind_Siliguri'] text-xs sm:text-base md:text-base leading-relaxed mb-4 text-[#FAFAFA] drop-shadow-md">
                       {slide.paragraph}
                     </p>
-                    <button className="bg-[#FB8B35] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 lg:px-8 lg:py-2.5 sm:text-sm lg:text-base rounded-lg  hover:bg-white 
+                    {/* <button className="bg-[#FB8B35] text-white px-3 py-1.5 text-xs sm:px-6 sm:py-2 lg:px-8 lg:py-2.5 sm:text-sm lg:text-base rounded-lg  hover:bg-white 
     hover:text-[#FB8B35] transition">
                       Know More
-                    </button>
+                    </button> */}
+                    <div className="flex justify-center sm:justify-center lg:justify-start w-full">
+                      <button
+
+                        className="group relative w-[140px] sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 
+               bg-[#FB8B35] text-white text-xs sm:text-sm md:text-base font-semibold 
+               rounded-lg border-2 border-[#FB8B35]
+               hover:bg-white hover:text-[#FB8B35]
+               shadow-md sm:shadow-lg hover:shadow-2xl hover:shadow-[#FB8B35]/30
+               transform hover:-translate-y-1 active:translate-y-0
+               transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 
+               overflow-hidden"
+                      >
+                        {/* Animated Background Slide */}
+                        <span className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+
+                        {/* Button Text */}
+                        <span className="relative z-10 font-bold">Know More</span>
+
+                        {/* SVG Arrow */}
+                        <svg
+                          className="w-3 h-3 sm:w-4 sm:h-4 relative z-10 group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+
                   </div>
 
                 )}

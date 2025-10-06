@@ -65,6 +65,8 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/otp', require('./routes/otp'));
+// Add this with your other route imports
+app.use('/api/volunteer', require('./routes/volunteer'));
 
 // Global Error Handler
 app.use((err, req, res, next) => {

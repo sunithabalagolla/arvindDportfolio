@@ -47,6 +47,8 @@ src/
 │
 ├─ pages/                     # Full pages for routing
 │   ├─ Home.jsx
+    |-galery/
+    
 │   ├─ Search/
 │   │   └─ Search.jsx          # Page for search results
 │   ├─ News/

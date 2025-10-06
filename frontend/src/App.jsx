@@ -4,37 +4,38 @@ import { AuthProvider } from "./context/AuthContext";
 import AppRoutes from "./routes/AppRoutes";
 import Header from "./components/common/Header";
 import Footer from "./components/common/footer";
+import ScrollToTop from "./components/common/ScrollToTop"; 
 import "./App.css";
 
 function AppContent() {
   const location = useLocation();
 
-  // Pages with NO header/footer (add auth pages)
+  const isJoinEventPage = location.pathname.startsWith('/volunteer/join/');
+
   const noHeaderFooterPages = [
     "/login", 
     "/signup", 
     "/auth/login", 
     "/auth/signup", 
     "/auth/otp-verification",
-    "/auth/forgot-password",    // Add this
-    "/auth/reset-password",     // Add this
+    "/auth/forgot-password",
+    "/auth/reset-password",
     "/auth/dashboard"
   ];
 
-  // Pages(home page) with transparent header 
   const transparentHeaderPages = ["/"];
 
-  const showHeaderFooter = !noHeaderFooterPages.includes(location.pathname);
+  const showHeaderFooter = !noHeaderFooterPages.includes(location.pathname) && !isJoinEventPage;
   const forceOrangeHeader = !transparentHeaderPages.includes(location.pathname);
 
   return (
     <div className="App">
-      {/* Header */}
+      <ScrollToTop /> 
+      
       {showHeaderFooter && (
         <Header forceOrangeBackground={forceOrangeHeader} />
       )}
 
-      {/* Page Content */}
       <div
         className={`page-wrapper ${
           transparentHeaderPages.includes(location.pathname) ? "pt-0" : ""
@@ -43,7 +44,6 @@ function AppContent() {
         <AppRoutes />
       </div>
 
-      {/* Footer */}
       {showHeaderFooter && <Footer />}
     </div>
   );

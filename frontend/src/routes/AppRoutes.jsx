@@ -14,6 +14,7 @@ import MyViewPage from "../pages/MyViewPage/MyViewPage";
 import NewsPage from "../pages/PressPage/NewsPage";
 import GetInTouchPage from "../pages/Getintouch/GetInTouchPage";
 import NewsletterPage from "../pages/NewsLetters/NewsletterPage";
+import Gallery from "../pages/Gallery/Gallery";
 
 // Import auth pages
 import Login from "../pages/auth/Login";
@@ -57,6 +58,9 @@ function AppRoutes() {
       <Route path="/newsletter/Archives" element={<NewsletterPage />} />
       <Route path="/newsletter/Subscriptions" element={<NewsletterPage />} />
       <Route path="/newsletter/Create" element={<NewsletterPage />} />
+
+{/* -------------gallery----------- */}
+      <Route path="/gallery" element={<Gallery />} />
 
       {/* AUTHENTICATION ROUTES */}
       <Route path="/auth/login" element={<Login />} />
