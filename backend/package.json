@@ -8,7 +8,12 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["authentication", "otp", "express", "mongodb"],
+  "keywords": [
+    "authentication",
+    "otp",
+    "express",
+    "mongodb"
+  ],
   "author": "politikos",
   "license": "ISC",
   "dependencies": {
@@ -21,6 +26,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.2",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.6"
   },
   "devDependencies": {

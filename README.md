@@ -24,13 +24,16 @@ src/
 │   └─ ui/                    # Search, hamburger, arrows, buttons
 │
 ├─ videos/                     # Video assets
-│
+
+
+│─ data/
+│   └── EventData.js 
 ├─ components/                # Reusable components
 │   ├─ common/                # Generic / reusable components
 │   │   ├─ Header.jsx          # Navbar with logo, search, language, hamburger
 │   │   ├─ Footer.jsx          # Footer
 │   │   └─ Card.jsx            # Generic card for News, Events, Volunteers, etc.
-│   │
+│   │   └─ scrolltotop.jsx
 │   ├─ home/                   # Home page-specific components
 │   │   ├─ Carousel.jsx        # Hero section carousel
 │   │   ├─ ArvindProfile.jsx
@@ -48,11 +51,14 @@ src/
 ├─ pages/                     # Full pages for routing
 │   ├─ Home.jsx
     |-galery/
-    
+       └─ Gallery.jsx 
+       └─ imagegallery.jsx     
 │   ├─ Search/
 │   │   └─ Search.jsx          # Page for search results
 │   ├─ News/
 │   │   └─ News.jsx            # Full page for “View All” news
+      Events/               ← NEW FOLDER
+        └── EventDetails.jsx 
 │   ├─ About/
 │   │   ├─ About.jsx
 │   │   ├─ Timeline.jsx
@@ -112,18 +118,29 @@ backend/
 ├── controllers/
 │   ├── authController.js # Handles signup, login, logout, and overall user authentication logic.
 │   └── otpController.js  # Handles generating OTPs, sending OTP emails, and verifying OTPs.
+    |__eventController.js
+    |__feedbackController.js
 ├── middleware/
 │   ├── auth.js          # Middleware to check if a user is authenticated (JWT/session verification).
 │   └── validation.js    # Middleware to validate user input (email format, password strength, etc.).
 ├── models/
 │   ├── User.js          # Defines the User schema in MongoDB (name, email, password, verified status, etc.).
 │   └── OTP.js           # Defines the OTP schema (code, associated user, expiry time, etc.).
+    └── joinedEvent.js 
+    └── Event.js.
+    |__ EventNotification.js
+    |__ Feedback.js
 ├── routes/
 │   ├── auth.js          # Defines API routes for signup, login, logout, etc.
 │   └── otp.js           # Defines API routes for sending OTP and verifying OTP.
+     |__  events.js
+     |__feedback.js
 ├── utils/
 │   ├── sendEmail.js     # Helper function to send OTP emails to users.
 │   └── generateOTP.js   # Helper function to generate random OTP codes.
+    |__   notificationScheduler.js
+    |__seedEvents.js
+     
 ├── .env                 # Stores environment variables (DB URL, email credentials, JWT secret).
 ├── .gitignore           # Ensures sensitive files (like .env) are not pushed to Git.
 ├── package.json         # Lists project dependencies, scripts, and metadata.

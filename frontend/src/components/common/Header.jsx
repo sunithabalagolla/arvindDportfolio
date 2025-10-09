@@ -257,6 +257,7 @@ border-t border-b border-l border-white/60
           <motion.img
             src={logo}
             alt="Logo"
+            onClick={() => navigate('/')} 
             className="h-8 md:h-12 lg:h-14 w-auto object-contain drop-shadow-md "
           />
         </div>

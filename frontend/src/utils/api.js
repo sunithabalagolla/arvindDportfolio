@@ -6,9 +6,8 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 10000, // 10 seconds
+    timeout: 30000, // 30 seconds - increased for email sending
 });
-
 
 // Request interceptor - Add token to requests
 api.interceptors.request.use(
@@ -27,7 +26,7 @@ api.interceptors.request.use(
 // Response interceptor - Handle errors globally
 api.interceptors.response.use(
     (response) => {
-        return response.data; // Return only data part
+        return response.data; // Return only data part (contains success, message, data)
     },
     (error) => {
         // Handle different error types
@@ -43,7 +42,7 @@ api.interceptors.response.use(
             }
 
             // Return error message from server
-           return Promise.reject(data?.message || data?.error || 'An error occurred');
+            return Promise.reject(data?.message || data?.error || 'An error occurred');
         } else if (error.request) {
             // Request made but no response
             return Promise.reject('Network error. Please check your connection.');
@@ -125,7 +124,7 @@ export const otpAPI = {
     },
 };
 
-
+// Volunteer API calls
 export const volunteerAPI = {
     // Join an event
     joinEvent: async (eventId, eventData) => {
@@ -137,10 +136,10 @@ export const volunteerAPI = {
         return await api.get('/volunteer/my-events');
     },
 
-    // Add this
-  leaveEvent: async (eventId) => {
-    return await api.delete(`/volunteer/leave-event/${eventId}`);
-  }
+    // Leave an event
+    leaveEvent: async (eventId) => {
+        return await api.delete(`/volunteer/leave-event/${eventId}`);
+    }
 };
 
 // Helper functions
@@ -163,15 +162,5 @@ export const removeAuthToken = () => {
     localStorage.removeItem('user');
     delete api.defaults.headers.common['Authorization'];
 };
-
-// export const volunteerAPI = {
-//     joinEvent: async (eventId) => {
-//         return await api.post(`/volunteer/join-event/${eventId}`);
-//     },
-    
-//     getJoinedEvents: async () => {
-//         return await api.get('/volunteer/my-events');
-//     }
-// };
 
 export default api;

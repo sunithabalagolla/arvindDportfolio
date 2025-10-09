@@ -8,13 +8,17 @@ import ArvindProfileDetails from "../pages/ArvindProfileDetails";
 import AllOpportunities from "../pages/VolunteerDashboard/AllOpportunities";
 import OpportunityDetails from "../pages/VolunteerDashboard/OpportunityDetails";
 import JoinEvent from "../pages/VolunteerDashboard/JoinEvent";
-import EventDetails from "../pages/eventNavigate/EventDetails";
+
 import Time from "../pages/About/Time";
 import MyViewPage from "../pages/MyViewPage/MyViewPage";
 import NewsPage from "../pages/PressPage/NewsPage";
 import GetInTouchPage from "../pages/Getintouch/GetInTouchPage";
 import NewsletterPage from "../pages/NewsLetters/NewsletterPage";
 import Gallery from "../pages/Gallery/Gallery";
+import ImagesGallery from "../pages/Gallery/ImagesGallery";
+
+
+
 
 // Import auth pages
 import Login from "../pages/auth/Login";
@@ -23,6 +27,8 @@ import Dashboard from "../pages/auth/Dashboard";
 import OTPVerification from "../pages/auth/OTPVerification";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import EventDetails from "../pages/Events/EventDetails";
+import VideosGallery from "../pages/Gallery/VideosGallery";
 
 function AppRoutes() {
   return (
@@ -59,15 +65,17 @@ function AppRoutes() {
       <Route path="/newsletter/Subscriptions" element={<NewsletterPage />} />
       <Route path="/newsletter/Create" element={<NewsletterPage />} />
 
-{/* -------------gallery----------- */}
+      {/* -------------gallery----------- */}
       <Route path="/gallery" element={<Gallery />} />
+      <Route path="/gallery/images" element={<ImagesGallery />} />
+      <Route path="/gallery/videos" element={<VideosGallery />} />
 
       {/* AUTHENTICATION ROUTES */}
       <Route path="/auth/login" element={<Login />} />
       <Route path="/auth/signup" element={<Signup />} />
       <Route path="/auth/otp-verification" element={<OTPVerification />} />
-      <Route path="/auth/forgot-password" element={<ForgotPassword />} />  {/* ADD THIS */}
-<Route path="/auth/reset-password" element={<ResetPassword />} />  
+      <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+      <Route path="/auth/reset-password" element={<ResetPassword />} />
       
       {/* Legacy auth routes (redirect to new paths) */}
       <Route path="/login" element={<Navigate to="/auth/login" replace />} />
@@ -113,7 +121,7 @@ function AppRoutes() {
       />
 
       {/* Event Details - Keep public for now, or make protected based on your needs */}
-      <Route path="/event/:id" element={<EventDetails />} />
+    <Route path="/events/:eventId" element={<EventDetails/>} />
 
       {/* 404 Route - Should be last */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -122,33 +130,3 @@ function AppRoutes() {
 }
 
 export default AppRoutes;
-
-
-// Authentication Structure:
-
-// /auth/login - Login page
-// /auth/signup - Signup page
-// /auth/otp-verification - OTP verification page
-// /auth/dashboard - Protected dashboard
-
-
-// Protected Routes:
-
-// Dashboard requires authentication
-// Volunteer pages require authentication
-// Uses <ProtectedRoute> wrapper
-
-
-// Legacy Redirects:
-
-// Old /login → /auth/login
-// Old /signup → /auth/signup
-// Old /dashboard → /auth/dashboard
-
-
-// Route Organization:
-
-// Public routes first
-// Authentication routes second
-// Protected routes third
-// 404 handler last

@@ -1,122 +1,56 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin } from 'lucide-react';
+import { getAllEvents } from '../../utils/eventApi';
 
 export default function EventCalendar() {
-    const navigate = (path) => console.log('Navigate to:', path);
-
-    const events = [
-        {
-            id: 1,
-            title: "Nature Farming",
-            type: "Workshop",
-            date: "Tuesday June, 2025",
-            time: "12:00 AM - 2:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "June",
-            day: "15",
-            monthAbbr: "Sep",
-            image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=250&fit=crop",
-            color: "#81C784"
-        },
-        {
-            id: 2,
-            title: "Bio Fencing",
-            type: "Workshop",
-            date: "Saturday April, 2025",
-            time: "10:00 AM - 1:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "April",
-            day: "23",
-            monthAbbr: "Sep",
-            image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=250&fit=crop",
-            color: "#FFB74D"
-        },
-        {
-            id: 3,
-            title: "Organic Farming",
-            type: "Workshop",
-            date: "Sunday May, 2025",
-            time: "5:00 PM - 7:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "May",
-            day: "12",
-            monthAbbr: "Oct",
-            image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=250&fit=crop",
-            color: "#4DB6AC"
-        },
-        {
-            id: 4,
-            title: "Agriculture Marketing",
-            type: "Workshop",
-            date: "Friday September, 2025",
-            time: "11:00 AM - 1:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "September",
-            day: "28",
-            monthAbbr: "Aug",
-            image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop",
-            color: "#FFB74D"
-        },
-        {
-            id: 5,
-            title: "Sustainable Agriculture",
-            type: "Workshop",
-            date: "Monday August, 2025",
-            time: "9:00 AM - 12:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "August",
-            day: "18",
-            monthAbbr: "Aug",
-            image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=250&fit=crop",
-            color: "#81C784"
-        },
-        {
-            id: 6,
-            title: "Water Conservation",
-            type: "Workshop",
-            date: "Wednesday July, 2025",
-            time: "2:00 PM - 5:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "July",
-            day: "16",
-            monthAbbr: "Jul",
-            image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400&h=250&fit=crop",
-            color: "#4DB6AC"
-        },
-        {
-            id: 7,
-            title: "Crop Rotation",
-            type: "Workshop",
-            date: "Thursday October, 2025",
-            time: "10:00 AM - 2:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "October",
-            day: "24",
-            monthAbbr: "Oct",
-            image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=250&fit=crop",
-            color: "#FFB74D"
-        },
-        {
-            id: 8,
-            title: "Pest Management",
-            type: "Workshop",
-            date: "Saturday November, 2025",
-            time: "1:00 PM - 4:00 PM",
-            location: "Dharmapuri Community Center",
-            month: "November",
-            day: "22",
-            monthAbbr: "Nov",
-            image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=250&fit=crop",
-            color: "#81C784"
-        }
-    ];
-
+    const navigate = useNavigate();
+    
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
-    const [selectedMonth, setSelectedMonth] = useState('August');
+    const [selectedMonth, setSelectedMonth] = useState('All');
     const [eventsPerPage, setEventsPerPage] = useState(4);
-    const [isMobile, setIsMobile] = useState(false);
 
     const months = ['All', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November'];
+
+    // Fetch events from backend
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                setLoading(true);
+                const response = await getAllEvents();
+                
+                if (response.success) {
+                    // Transform backend data to match frontend format
+                    const transformedEvents = response.data.map(event => ({
+                        id: event._id,
+                        title: event.title,
+                        type: event.type,
+                        date: new Date(event.date).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            month: 'long', 
+                            year: 'numeric' 
+                        }),
+                        time: event.time,
+                        location: event.location,
+                        month: new Date(event.date).toLocaleDateString('en-US', { month: 'long' }),
+                        day: new Date(event.date).getDate().toString(),
+                        monthAbbr: new Date(event.date).toLocaleDateString('en-US', { month: 'short' }),
+                        image: event.image,
+                        color: event.color
+                    }));
+                    setEvents(transformedEvents);
+                }
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEvents();
+    }, []);
 
     const filteredEvents = selectedMonth === 'All'
         ? events
@@ -127,19 +61,14 @@ export default function EventCalendar() {
             const width = window.innerWidth;
             if (width < 640) {
                 setEventsPerPage(1);
-                setIsMobile(true);
             } else if (width >= 640 && width < 768) {
                 setEventsPerPage(2);
-                setIsMobile(false);
             } else if (width >= 768 && width < 1024) {
                 setEventsPerPage(2);
-                setIsMobile(false);
             } else if (width >= 1024 && width < 1280) {
                 setEventsPerPage(3);
-                setIsMobile(false);
             } else {
                 setEventsPerPage(4);
-                setIsMobile(false);
             }
         };
 
@@ -156,18 +85,23 @@ export default function EventCalendar() {
     );
     
     const handleCardClick = (eventId) => {
-        navigate(`/event/${eventId}`);
+        navigate(`/events/${eventId}`);
     };
 
     const handleNotifyClick = (e, eventId) => {
         e.stopPropagation();
-        console.log(`Setting notification for event ${eventId}`);
-        alert(`Notification set for event ${eventId}`);
+        const isLoggedIn = !!localStorage.getItem('authToken');
+        
+        if (!isLoggedIn) {
+            navigate('/auth/login', { state: { returnUrl: `/events/${eventId}` } });
+        } else {
+            navigate(`/events/${eventId}?notify=true`);
+        }
     };
 
     const handleLearnMoreClick = (e, eventId) => {
         e.stopPropagation();
-        navigate(`/event/${eventId}`);
+        navigate(`/events/${eventId}`);
     };
 
     const nextPage = () => {
@@ -183,17 +117,26 @@ export default function EventCalendar() {
         setCurrentPage(0);
     };
 
+    if (loading) {
+        return (
+            <div className="bg-white py-12 px-6">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p className="text-xl text-gray-600">Loading events...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-white py-12 px-6">
+        <div className="bg-white py-12 px-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12 relative">
                     <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3">
-          Event Calender
-          </h2>
-          <div className="w-16 sm:w-20 md:w-24 h-1 mx-auto rounded-full" style={{ background: '#FB8B35' }}></div>
+                        Event Calendar
+                    </h2>
+                    <div className="w-16 sm:w-20 md:w-24 h-1 mx-auto rounded-full" style={{ background: '#FB8B35' }}></div>
                     
-                    {/* Month Filter Dropdown - Top Right */}
                     <div className="absolute top-0 right-0">
                         <select
                             value={selectedMonth}
@@ -218,9 +161,7 @@ export default function EventCalendar() {
                     </p>
                 </div>
 
-                {/* Event Cards Container */}
                 <div className="relative px-12">
-                    {/* Navigation Arrows */}
                     {totalPages > 1 && (
                         <>
                             <button
@@ -241,7 +182,6 @@ export default function EventCalendar() {
                         </>
                     )}
 
-                    {/* Event Cards Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {currentEvents.map((event) => (
                             <div
@@ -252,7 +192,6 @@ export default function EventCalendar() {
                                 cursor-pointer border-2"
                                 style={{ borderColor: event.color }}
                             >
-                                {/* Image with Date Badge */}
                                 <div className="relative m-4 overflow-hidden rounded-t-2xl">
                                     <img
                                         src={event.image}
@@ -266,7 +205,6 @@ export default function EventCalendar() {
                                     </div>
                                 </div>
 
-                                {/* Card Content */}
                                 <div className="px-5 pb-5">
                                     <h3 className="text-xl font-bold text-gray-900 mb-1">
                                         {event.title}
@@ -292,7 +230,6 @@ export default function EventCalendar() {
                                         </div>
                                     </div>
 
-                                    {/* Action Buttons */}
                                     <div className="flex gap-3">
                                         <button
                                             onClick={(e) => handleNotifyClick(e, event.id)}
@@ -318,7 +255,6 @@ export default function EventCalendar() {
                     </div>
                 </div>
 
-                {/* No Events Message */}
                 {filteredEvents.length === 0 && (
                     <div className="text-center py-12">
                         <p className="text-xl text-gray-600">
@@ -330,3 +266,32 @@ export default function EventCalendar() {
         </div>
     );
 }
+// Home Page
+//     ↓
+// Event Calendar Section (shows 4-8 events)
+//     ↓
+// User clicks "Learn More"
+//     ↓
+// Navigate to /events/:eventId
+//     ↓
+// EventDetails Page displays:
+//     • Full description
+//     • Why Attend section
+//     • Event Highlights
+//     • Notify Me button
+//     • Register button
+//     ↓
+// User clicks "Notify Me"
+//     ↓
+// Check if logged in:
+//     ├─ NOT logged in → Redirect to /auth/login
+//     └─ Logged in → Show notification modal
+//         ↓
+//     Select preferences:
+//         □ 1 day before
+//         □ 1 week before  
+//         □ Morning of event
+//         ↓
+//     Click "Set Reminder"
+//         ↓
+//     Success! (Currently just console.log + alert)

@@ -53,21 +53,30 @@ export const AuthProvider = ({ children }) => {
     };
 
     // Register new user
-    const register = async (userData) => {
-        try {
-            setError(null);
-            const response = await authAPI.register(userData);
-            
-            return {
-                success: true,
-                data: response.data,
-                message: response.message
-            };
-        } catch (error) {
-            setError(error);
-            throw error;
-        }
-    };
+   // Register new user
+const register = async (userData) => {
+    try {
+        setError(null);
+        
+        console.log('🔵 AuthContext: Starting registration...');
+        console.log('🔵 User data:', userData);
+        
+        // authAPI.register returns the unwrapped response from axios interceptor
+        // Response structure: { success: true, message: "...", data: {...} }
+        const response = await authAPI.register(userData);
+        
+        console.log('🔵 AuthContext: Register response:', response);
+        
+        // Return the response as-is since it already has the correct structure
+        return response;
+    } catch (error) {
+        console.error('🔴 AuthContext: Registration error:', error);
+        console.error('🔴 Error type:', typeof error);
+        console.error('🔴 Error details:', error);
+        setError(error);
+        throw error;
+    }
+};
 
     // Login with credentials
     const login = async (credentials) => {

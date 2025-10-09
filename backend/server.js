@@ -1,9 +1,12 @@
-const express = require('express');   //Import the Express module so I can use it in this file
+const express = require('express');
 const cors = require('cors'); 
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
+const eventRoutes = require('./routes/events');
+const { startNotificationScheduler } = require('./utils/notificationScheduler');
+const feedbackRoutes = require('./routes/feedback');
 
 // Load environment variables
 dotenv.config();
@@ -11,8 +14,15 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB (ASYNC - so we need to wait for it)
+connectDB().then(() => {
+    // ✅ Start scheduler AFTER database is connected
+    startNotificationScheduler();
+    console.log('✅ Event notification scheduler initialized');
+}).catch(err => {
+    console.error('❌ Database connection failed:', err);
+    process.exit(1);
+});
 
 // Security Middleware
 app.use(helmet({
@@ -40,7 +50,7 @@ app.use('/api', limiter);
 
 // CORS Configuration
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -65,8 +75,10 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/otp', require('./routes/otp'));
-// Add this with your other route imports
 app.use('/api/volunteer', require('./routes/volunteer'));
+app.use('/api', eventRoutes); // ✅ Event routes
+app.use('/api/feedback', feedbackRoutes);
+
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -79,7 +91,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 Handler - FIXED: Removed the '*' path parameter to prevent PathError
+// 404 Handler
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -96,6 +108,7 @@ app.listen(PORT, () => {
 📡 Port: ${PORT}
 🌐 URL: http://localhost:${PORT}
 📊 Health Check: http://localhost:${PORT}/api/health
+📅 Event Notification Scheduler: Active
 ⏰ Started at: ${new Date().toISOString()}
     `);
 });
