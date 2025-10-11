@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { User, Eye, EyeOff, Download, ChevronLeft, ChevronRight, Edit, LogOut, Home } from 'lucide-react';
+import { User, Eye, EyeOff, Download, ChevronLeft, ChevronRight, Edit, LogOut, Home, Bell, Trash2, CheckCircle, Calendar, Clock } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI, volunteerAPI } from '../../utils/api';
+import { getMyNotifications, cancelNotification } from '../../utils/eventApi';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -19,6 +20,10 @@ const Dashboard = () => {
 
     const [joinedEvents, setJoinedEvents] = useState([]);
     const [eventsLoading, setEventsLoading] = useState(true);
+
+    // Notification states
+    const [notifications, setNotifications] = useState([]);
+    const [loadingNotifications, setLoadingNotifications] = useState(true);
 
     const [profileData, setProfileData] = useState({
         firstName: '',
@@ -76,6 +81,38 @@ const Dashboard = () => {
 
         fetchJoinedEvents();
     }, [authUser]);
+
+    // Fetch notifications
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await getMyNotifications();
+                if (response.success) {
+                    setNotifications(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+            } finally {
+                setLoadingNotifications(false);
+            }
+        };
+
+        fetchNotifications();
+    }, []);
+
+    const handleCancelNotification = async (notificationId) => {
+        if (window.confirm('Are you sure you want to cancel this notification?')) {
+            try {
+                await cancelNotification(notificationId);
+                setNotifications(notifications.filter(n => n._id !== notificationId));
+                setSuccess('Notification cancelled successfully!');
+                setTimeout(() => setSuccess(''), 3000);
+            } catch (error) {
+                setError('Failed to cancel notification');
+                setTimeout(() => setError(''), 3000);
+            }
+        }
+    };
 
     const handleProfileImageChange = (event) => {
         const file = event.target.files[0];
@@ -218,7 +255,7 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            {/* Updated Header with Back to Home Button */}
+            {/* Header */}
             <div className="bg-white border-b border-gray-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -376,6 +413,86 @@ const Dashboard = () => {
                                     {authUser?.isVerified ? 'Verified' : 'Pending'}
                                 </span>
                             </div>
+                        </div>
+
+                        {/* Notifications Section - NEW */}
+                        <div className="bg-white rounded-xl shadow-md p-6">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                                <Bell className="w-6 h-6 mr-2 text-orange-500" />
+                                My Event Notifications
+                            </h2>
+
+                            {loadingNotifications ? (
+                                <div className="text-center py-8">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+                                    <p className="text-gray-600 mt-4">Loading notifications...</p>
+                                </div>
+                            ) : notifications.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <Bell className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                                    <p className="text-gray-600">No notifications set yet.</p>
+                                    <p className="text-sm text-gray-500 mt-2">
+                                        Click "Notify Me" on any event to get reminders!
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {notifications.map((notification) => (
+                                        <div 
+                                            key={notification._id} 
+                                            className="border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-colors"
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                                        {notification.eventTitle}
+                                                    </h3>
+                                                    <div className="space-y-1 text-sm text-gray-600">
+                                                        <div className="flex items-center">
+                                                            <Calendar className="w-4 h-4 mr-2" />
+                                                            <span>Event: {new Date(notification.eventDate).toLocaleDateString('en-US', { 
+                                                                weekday: 'long', 
+                                                                year: 'numeric', 
+                                                                month: 'long', 
+                                                                day: 'numeric' 
+                                                            })}</span>
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <Bell className="w-4 h-4 mr-2" />
+                                                            <span>Reminder: {new Date(notification.reminderDate).toLocaleDateString('en-US', { 
+                                                                weekday: 'long', 
+                                                                year: 'numeric', 
+                                                                month: 'long', 
+                                                                day: 'numeric' 
+                                                            })} at 9:00 AM</span>
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <Clock className="w-4 h-4 mr-2" />
+                                                            <span className={`font-medium ${notification.isSent ? 'text-green-600' : 'text-orange-600'}`}>
+                                                                {notification.isSent ? (
+                                                                    <span className="flex items-center">
+                                                                        <CheckCircle className="w-4 h-4 mr-1" />
+                                                                        Sent
+                                                                    </span>
+                                                                ) : (
+                                                                    <span>Pending</span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleCancelNotification(notification._id)}
+                                                    className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Cancel notification"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="bg-white rounded-xl shadow-md p-6">

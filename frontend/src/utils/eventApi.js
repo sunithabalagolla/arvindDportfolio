@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
-// Get auth token from localStorage
+// Get auth token from localStorage - FIXED to use 'token' not 'authToken'
 const getAuthToken = () => {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem('token');  // ✅ Changed from 'authToken' to 'token'
 };
 
 // Get all events
@@ -33,6 +33,12 @@ export const getEventById = async (eventId) => {
 export const setEventNotification = async (eventId, reminderDays) => {
     try {
         const token = getAuthToken();
+        
+        console.log('📨 Setting notification...');
+        console.log('Token:', token ? 'Found' : 'Not found');
+        console.log('Event ID:', eventId);
+        console.log('Reminder Days:', reminderDays);
+        
         const response = await axios.post(
             `${API_URL}/notifications/set`,
             {

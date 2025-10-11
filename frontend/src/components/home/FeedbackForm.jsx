@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { MessageSquare, AlertCircle } from 'lucide-react';
+import { submitConcern, submitFeedback } from '../../utils/feedbackApi';
 import image1 from '../../assets/images/feedback/feedbackImg1.png';
 import image2 from '../../assets/images/feedback/feedbackImg2.png';
 import image3 from '../../assets/images/feedback/feedbackImg3.png';
@@ -10,6 +11,8 @@ export default function FeedbackForm() {
     const [concerns, setConcerns] = useState('');
     const [feedback, setFeedback] = useState('');
     const [animateImages, setAnimateImages] = useState(false);
+    const [loading, setLoading] = useState({ concern: false, feedback: false });
+    const [errors, setErrors] = useState({ concern: '', feedback: '' });
     const imagesRef = useRef(null);
 
     useEffect(() => {
@@ -17,11 +20,11 @@ export default function FeedbackForm() {
             ([entry]) => {
                 if (entry.isIntersecting) {
                     setAnimateImages(true);
-                    observer.disconnect(); // Animate only once
+                    observer.disconnect();
                 }
             },
             {
-                threshold: 0.3, // Trigger when 30% visible
+                threshold: 0.3,
             }
         );
 
@@ -34,17 +37,57 @@ export default function FeedbackForm() {
         };
     }, []);
 
-    const handleSubmit = (type) => {
-        if (type === 'concerns' && concerns.trim()) {
-            alert('Thank you for reporting your concerns. We will review them shortly.');
-            setConcerns('');
-        } else if (type === 'feedback' && feedback.trim()) {
-            alert('Thank you for your feedback! We appreciate your input.');
-            setFeedback('');
+    const validateMessage = (message, type) => {
+        if (!message.trim()) {
+            return `${type === 'concern' ? 'Concern' : 'Feedback'} message is required`;
+        }
+        if (message.trim().length < 10) {
+            return 'Message must be at least 10 characters long';
+        }
+        if (message.trim().length > 1000) {
+            return 'Message must not exceed 1000 characters';
+        }
+        return '';
+    };
+
+    const handleSubmit = async (type) => {
+        const message = type === 'concerns' ? concerns : feedback;
+        const error = validateMessage(message, type);
+
+        if (error) {
+            setErrors(prev => ({ ...prev, [type]: error }));
+            return;
+        }
+
+        setErrors(prev => ({ ...prev, [type]: '' }));
+        setLoading(prev => ({ ...prev, [type]: true }));
+
+        try {
+            let response;
+            if (type === 'concerns') {
+                response = await submitConcern(message.trim());
+            } else {
+                response = await submitFeedback(message.trim());
+            }
+
+            if (response.success) {
+                alert(response.message);
+                if (type === 'concerns') {
+                    setConcerns('');
+                } else {
+                    setFeedback('');
+                }
+            }
+        } catch (error) {
+            const errorMessage = error.message || 
+                `Failed to submit ${type === 'concerns' ? 'concern' : 'feedback'}. Please try again.`;
+            setErrors(prev => ({ ...prev, [type]: errorMessage }));
+            alert(errorMessage);
+        } finally {
+            setLoading(prev => ({ ...prev, [type]: false }));
         }
     };
 
-    // Animation classes: start hidden and scaled down, then animate in
     const animationClass = animateImages
         ? 'opacity-100 scale-100 transition-all duration-700 ease-out'
         : 'opacity-0 scale-95';
@@ -89,23 +132,36 @@ export default function FeedbackForm() {
                                 </div>
 
                                 <div className="space-y-3 sm:space-y-4">
-                                    <textarea
-                                        value={concerns}
-                                        onChange={(e) => setConcerns(e.target.value)}
-                                        placeholder="Report any Issues, Bugs or Concerns you have encountered..."
-                                        className="w-full h-28 sm:h-32 md:h-36 p-3 sm:p-4 border border-gray-200 rounded-xl 
-                                         focus:outline-none
-                 resize-none  bg-white text-sm sm:text-base
-                 transition-all duration-300 hover:shadow-md "
-                                    />
+                                    <div>
+                                        <textarea
+                                            value={concerns}
+                                            onChange={(e) => {
+                                                setConcerns(e.target.value);
+                                                setErrors(prev => ({ ...prev, concerns: '' }));
+                                            }}
+                                            placeholder="Report any Issues, Bugs or Concerns you have encountered..."
+                                            className={`w-full h-28 sm:h-32 md:h-36 p-3 sm:p-4 border rounded-xl 
+                                                focus:outline-none resize-none bg-white text-sm sm:text-base
+                                                transition-all duration-300 hover:shadow-md
+                                                ${errors.concerns ? 'border-red-500' : 'border-gray-200'}`}
+                                            disabled={loading.concerns}
+                                        />
+                                        {errors.concerns && (
+                                            <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.concerns}</p>
+                                        )}
+                                        <p className="text-gray-500 text-xs mt-1">
+                                            {concerns.length}/1000 characters
+                                        </p>
+                                    </div>
                                     <div className="text-right">
                                         <button
                                             onClick={() => handleSubmit('concerns')}
+                                            disabled={loading.concerns}
                                             className="bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white
-                                             font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-colors duration-200 
-                                              text-xs sm:text-sm min-w-[120px]"
+                                                font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-colors duration-200 
+                                                text-xs sm:text-sm min-w-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Submit Concern
+                                            {loading.concerns ? 'Submitting...' : 'Submit Concern'}
                                         </button>
                                     </div>
                                 </div>
@@ -121,23 +177,36 @@ export default function FeedbackForm() {
                                 </div>
 
                                 <div className="space-y-3 sm:space-y-4">
-                                    <textarea
-                                        value={feedback}
-                                        onChange={(e) => setFeedback(e.target.value)}
-                                        placeholder="Share your Thoughts, Suggestions and Experience with us..."
-                                        className="w-full h-28 sm:h-32 md:h-36 p-3 sm:p-4 border border-gray-200 rounded-xl 
-                                         focus:outline-none
-                 resize-none  bg-white text-sm sm:text-base
-                 transition-all duration-300 hover:shadow-md "
-                                    />
+                                    <div>
+                                        <textarea
+                                            value={feedback}
+                                            onChange={(e) => {
+                                                setFeedback(e.target.value);
+                                                setErrors(prev => ({ ...prev, feedback: '' }));
+                                            }}
+                                            placeholder="Share your Thoughts, Suggestions and Experience with us..."
+                                            className={`w-full h-28 sm:h-32 md:h-36 p-3 sm:p-4 border rounded-xl 
+                                                focus:outline-none resize-none bg-white text-sm sm:text-base
+                                                transition-all duration-300 hover:shadow-md
+                                                ${errors.feedback ? 'border-red-500' : 'border-gray-200'}`}
+                                            disabled={loading.feedback}
+                                        />
+                                        {errors.feedback && (
+                                            <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.feedback}</p>
+                                        )}
+                                        <p className="text-gray-500 text-xs mt-1">
+                                            {feedback.length}/1000 characters
+                                        </p>
+                                    </div>
                                     <div className="text-right">
                                         <button
                                             onClick={() => handleSubmit('feedback')}
-                                            className="bg-blue-600  hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-1.5 
-                                            sm:py-2 rounded-xl transition-colors duration-200 
-                                             text-xs sm:text-sm min-w-[120px]"
+                                            disabled={loading.feedback}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-1.5 
+                                                sm:py-2 rounded-xl transition-colors duration-200 
+                                                text-xs sm:text-sm min-w-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Submit Feedback
+                                            {loading.feedback ? 'Submitting...' : 'Submit Feedback'}
                                         </button>
                                     </div>
                                 </div>
@@ -146,48 +215,28 @@ export default function FeedbackForm() {
 
                         {/* Right Column - Photo Grid */}
                         <div ref={imagesRef} className="space-y-2 sm:space-y-3">
-                            {/* Top Row - 60% rectangle left, 40% square right */}
+                            {/* Top Row */}
                             <div className="flex gap-2 sm:gap-3">
                                 <div className={`flex-[0.6] rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/2] relative ${animationClass} ${animateImages ? 'animate-fadeInScale' : ''}`}>
-                                    <img
-                                        src={image1}
-                                        alt="Professional headshot"
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={image1} alt="Professional headshot" className="w-full h-full object-cover" />
                                 </div>
                                 <div className={`flex-[0.4] rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/3] relative ${animationClass} ${animateImages ? 'animate-fadeInScale' : ''}`}>
-                                    <img
-                                        src={image2}
-                                        alt="Team member"
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={image2} alt="Team member" className="w-full h-full object-cover" />
                                 </div>
                             </div>
 
-                            {/* Middle Row - Full width */}
+                            {/* Middle Row */}
                             <div className={`w-full rounded-2xl sm:rounded-3xl overflow-hidden aspect-[7/2] relative ${animationClass} ${animateImages ? 'animate-fadeInScale' : ''}`}>
-                                <img
-                                    src={image3}
-                                    alt="Team collaboration"
-                                    className="w-full h-full object-cover object-center"
-                                />
+                                <img src={image3} alt="Team collaboration" className="w-full h-full object-cover object-center" />
                             </div>
 
-                            {/* Bottom Row - 40% square left, 60% rectangle right */}
+                            {/* Bottom Row */}
                             <div className="flex gap-2 sm:gap-3">
                                 <div className={`flex-[0.4] rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/3] relative ${animationClass} ${animateImages ? 'animate-fadeInScale' : ''}`}>
-                                    <img
-                                        src={image4}
-                                        alt="Team members"
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={image4} alt="Team members" className="w-full h-full object-cover" />
                                 </div>
                                 <div className={`flex-[0.6] rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/2] relative ${animationClass} ${animateImages ? 'animate-fadeInScale' : ''}`}>
-                                    <img
-                                        src={image5}
-                                        alt="Business professional"
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={image5} alt="Business professional" className="w-full h-full object-cover" />
                                 </div>
                             </div>
                         </div>

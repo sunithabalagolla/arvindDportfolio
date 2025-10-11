@@ -29,6 +29,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 import EventDetails from "../pages/Events/EventDetails";
 import VideosGallery from "../pages/Gallery/VideosGallery";
+import Shop from "../pages/shopNavigate/Shop";
 
 function AppRoutes() {
   return (
@@ -69,6 +70,8 @@ function AppRoutes() {
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/gallery/images" element={<ImagesGallery />} />
       <Route path="/gallery/videos" element={<VideosGallery />} />
+  
+      <Route path="/shop" element={<Shop />} />
 
       {/* AUTHENTICATION ROUTES */}
       <Route path="/auth/login" element={<Login />} />

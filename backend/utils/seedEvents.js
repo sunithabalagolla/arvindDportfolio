@@ -8,7 +8,7 @@ const events = [
         type: "Workshop",
         description: "Nature Farming Workshop in Nizamabad",
         fullDescription: "Shri Arvind Dharmapuri is thrilled to announce a Nature Farming Workshop in Nizamabad, dedicated to empowering farmers, agri-entrepreneurs, and rural youth with practical knowledge and innovative techniques for sustainable agriculture.",
-        date: new Date('2025-06-15T12:00:00'),
+        date: new Date('2025-10-12T12:00:00'),
         time: "12:00 PM - 2:00 PM",
         location: "Dharmapuri Community Center",
         image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=500&fit=crop",
@@ -160,11 +160,11 @@ const events = [
         fullDescription: "Learn to code from scratch using HTML, CSS, and JavaScript. Ideal for students who want to start their journey in web development.",
         date: new Date('2025-10-20T09:00:00'),
         time: "9:00 AM - 5:00 PM",
-        location: "Quantum Works IT Solutions, Hyderabad",
+        location: "nexus, Hyderabad",
         image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=500&fit=crop",
         capacity: 80,
         registeredCount: 60,
-        instructor: "Sunitha Balagolla",
+        instructor: "kevin",
         whyAttend: {
             intro: "Start your web development journey with hands-on coding experience.",
             points: [
