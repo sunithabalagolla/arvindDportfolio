@@ -30,6 +30,7 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import EventDetails from "../pages/Events/EventDetails";
 import VideosGallery from "../pages/Gallery/VideosGallery";
 import Shop from "../pages/shopNavigate/Shop";
+import AdminLogin from "../pages/admin/AdminLogin";
 
 function AppRoutes() {
   return (
@@ -128,6 +129,11 @@ function AppRoutes() {
 
       {/* 404 Route - Should be last */}
       <Route path="*" element={<Navigate to="/" replace />} />
+
+
+
+      {/* ---------------admin ---------- */}
+      <Route path="/admin/login" element={<AdminLogin />} />
     </Routes>
   );
 }

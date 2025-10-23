@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, MapPin, Users, Bell, CheckCircle } from 'lucide-react';
 import { getEventById as fetchEventById, setEventNotification } from '../../utils/eventApi';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 export default function EventDetails() {
     const { eventId } = useParams();
@@ -80,31 +81,44 @@ export default function EventDetails() {
         }
     };
     
-    const handleSetNotification = async () => {
-        try {
-            const reminderDays = [];
-            if (reminderPreferences.oneDayBefore) reminderDays.push(1);
-            if (reminderPreferences.oneWeekBefore) reminderDays.push(7);
-            if (reminderPreferences.morningOf) reminderDays.push(0);
-            
-            if (reminderDays.length === 0) {
-                alert('Please select at least one reminder option');
-                return;
-            }
-            
-            // Call API for each reminder preference
-            for (const days of reminderDays) {
-                await setEventNotification(event._id, days);
-            }
-            
-            setIsNotified(true);
-            setShowNotifyModal(false);
-            alert('✓ Notification set successfully! You will receive email reminders.');
-        } catch (error) {
-            console.error('Error:', error);
-            alert(error.response?.data?.message || 'Failed to set notification. Please try again.');
+  const handleSetNotification = async () => {
+    try {
+        const reminderDays = [];
+        if (reminderPreferences.oneDayBefore) reminderDays.push(1);
+        if (reminderPreferences.oneWeekBefore) reminderDays.push(7);
+        if (reminderPreferences.morningOf) reminderDays.push(0);
+        
+        if (reminderDays.length === 0) {
+            toast.warning('Please select at least one reminder option', {
+                icon: '⚠️'
+            });
+            return;
         }
-    };
+        
+        // Call API for each reminder preference
+        for (const days of reminderDays) {
+            await setEventNotification(event._id, days);
+        }
+        
+        setIsNotified(true);
+        setShowNotifyModal(false);
+        
+        // Beautiful success toast
+        toast.success('🎉 Notification set successfully! You will receive email reminders.', {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        toast.error(error.response?.data?.message || 'Failed to set notification. Please try again.', {
+            icon: '❌'
+        });
+    }
+};
     
     const handlePreferenceChange = (key) => {
         setReminderPreferences(prev => ({

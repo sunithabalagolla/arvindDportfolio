@@ -1,135 +1,218 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Heart, Star, Sparkles } from 'lucide-react';
-import image1 from '../../assets/images/shop/image1.jpg';
-import image2 from '../../assets/images/shop/image2.jpg';
-import image3 from '../../assets/images/shop/image3.jpg';
-import image4 from '../../assets/images/shop/image4.jpg';
-import image5 from '../../assets/images/shop/iamge5.jpg';
 import { useNavigate } from 'react-router-dom';
+import { fetchHomeProducts, addToCart, toggleWishlist, getWishlist } from '../../utils/shopApi';
+import { useAuth } from '../../context/AuthContext';
+
+// ✅ Toast Notification Helper Function
+const showToast = (message, type = 'success') => {
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+    
+    toast.className = `fixed top-20 right-4 z-[9999] px-6 py-4 rounded-lg shadow-2xl text-white font-medium ${bgColor}`;
+    toast.style.cssText = `
+        animation: slideIn 0.3s ease-out;
+        transition: all 0.3s ease-out;
+    `;
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="text-xl font-bold">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, 300);
+    }, 2500);
+};
+
+// Add keyframe animation
+if (!document.getElementById('toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'toast-styles';
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 const ShopSection = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();  
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [hoveredProduct, setHoveredProduct] = useState(null);
     const [wishlist, setWishlist] = useState(new Set());
 
-    // Sample products data - In production, fetch from backend
-    const initialProducts = [
-        {
-            id: 1,
-            name: "Unisex BJP T-shirt Set of 1",
-            image: image1,
-            price: "₹499/-",
-            category: "apparel",
-            type: "orange-tshirt",
-            rating: 4.5,
-            reviews: 128,
-            discount: 20,
-            badge: "Best Seller"
-        },
-        {
-            id: 2,
-            name: "BJP Logo Coffee Mug",
-            image: image2,
-            price: "₹499/-",
-            category: "accessories",
-            type: "mug",
-            rating: 4.8,
-            reviews: 95,
-            discount: 15,
-            badge: "Top Rated"
-        },
-        {
-            id: 3,
-            name: "BJP Flags Set of 10",
-            image: image3,
-            price: "₹499/-",
-            category: "flags",
-            type: "flags",
-            rating: 4.6,
-            reviews: 142,
-            discount: 10,
-            badge: "Popular"
-        },
-        {
-            id: 4,
-            name: "Unisex BJP T-shirt Set of 1",
-            image: image4,
-            price: "₹499/-",
-            category: "apparel",
-            type: "white-tshirt",
-            rating: 4.7,
-            reviews: 110,
-            discount: 25,
-            badge: "Best Value"
-        }
-    ];
-
+    // ✅ Load products
     useEffect(() => {
-        // Simulate API call to fetch products
-        const fetchProducts = async () => {
+        const loadProducts = async () => {
             try {
                 setLoading(true);
-                // In production, replace with actual API call:
-                // const response = await fetch('/api/products/home');
-                // const data = await response.json();
-                // setProducts(data);
+                const response = await fetchHomeProducts(4);
                 
-                // For now, use mock data
-                setTimeout(() => {
-                    setProducts(initialProducts);
-                    setLoading(false);
-                }, 500);
+                if (response.success && response.data) {
+                    setProducts(response.data);
+                }
             } catch (error) {
-                console.error('Error fetching products:', error);
-                setProducts(initialProducts);
+                console.error('Error loading products:', error);
+                showToast('Failed to load products', 'error');
+            } finally {
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        loadProducts();
     }, []);
 
-    const handleAddToCart = (e, product) => {
-        e.stopPropagation();
-        
-        // Add to cart logic (integrate with your cart context/state)
-        const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingProduct = existingCart.find(item => item.id === product.id);
-        
-        if (existingProduct) {
-            existingProduct.quantity += 1;
-        } else {
-            existingCart.push({ ...product, quantity: 1 });
-        }
-        
-        localStorage.setItem('cart', JSON.stringify(existingCart));
-        
-        // Show success notification
-        const btn = e.currentTarget;
-        const originalContent = btn.innerHTML;
-        btn.innerHTML = '✓ Added!';
-        btn.style.backgroundColor = '#10b981';
-        setTimeout(() => {
-            btn.innerHTML = originalContent;
-            btn.style.backgroundColor = '';
-        }, 2000);
-    };
+    // ✅ Load wishlist
+    useEffect(() => {
+        const loadWishlist = async () => {
+            try {
+                if (isAuthenticated && user) {
+                    const response = await getWishlist();
+                    
+                    if (response.success && response.data) {
+                        const productIds = response.data.products.map(p => 
+                            typeof p === 'string' ? p : p._id
+                        );
+                        setWishlist(new Set(productIds));
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading wishlist:', error);
+            }
+        };
 
-    const handleWishlist = (e, productId) => {
-        e.stopPropagation();
-        const newWishlist = new Set(wishlist);
-        if (newWishlist.has(productId)) {
-            newWishlist.delete(productId);
-        } else {
-            newWishlist.add(productId);
+        loadWishlist();
+    }, [isAuthenticated, user]);
+
+    // ✅ Add to cart handler with toast notification
+  // ✅ Fixed Add to cart handler with proper error handling
+// ✅ Updated handleAddToCart with better visual feedback
+const handleAddToCart = async (e, product) => {
+    e.stopPropagation();
+    
+    // ✅ Store button reference BEFORE async operation
+    const btn = e.currentTarget;
+    const originalBgColor = btn.style.backgroundColor;
+    const originalText = btn.innerHTML;
+    
+    // ✅ Show loading state immediately
+    btn.disabled = true;
+    btn.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>';
+    btn.classList.add('opacity-70', 'cursor-wait');
+    
+    try {
+        if (!isAuthenticated || !user) {
+            showToast('Please login to add items to cart', 'error');
+            navigate('/login');
+            return;
         }
-        setWishlist(newWishlist);
+
+        // ✅ Wait for the API response
+        const response = await addToCart(product._id, 1);
+        
+        // ✅ Only show success if API call was successful
+        if (response && response.success) {
+            console.log('✅ Added to cart:', product.name);
+            
+            // Update cart badge
+            window.dispatchEvent(new Event('cartUpdated'));
+            
+            // ✅ Show success state
+            btn.style.backgroundColor = '#10b981';
+            btn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            `;
+            
+            // ✅ Show success toast
+            showToast(`${product.name} added to cart!`, 'success');
+            
+            // ✅ Reset button after animation
+            setTimeout(() => {
+                if (btn) {
+                    btn.innerHTML = originalText;
+                    btn.style.backgroundColor = originalBgColor;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-70', 'cursor-wait');
+                }
+            }, 1500);
+        } else {
+            // ✅ Handle unsuccessful response
+            throw new Error(response?.message || 'Failed to add to cart');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error adding to cart:', error);
+        showToast(error.message || 'Failed to add to cart', 'error');
+        
+        // ✅ Reset button on error
+        if (btn) {
+            btn.innerHTML = originalText;
+            btn.style.backgroundColor = originalBgColor;
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-wait');
+        }
+    }
+};
+
+
+    // ✅ Wishlist toggle handler with toast notification
+    const handleWishlist = async (e, productId) => {
+        e.stopPropagation();
+        
+        try {
+            if (!isAuthenticated || !user) {
+                showToast('Please login to manage wishlist', 'error');
+                navigate('/login');
+                return;
+            }
+
+            const response = await toggleWishlist(productId);
+            
+            if (response.success) {
+                const newWishlist = new Set(wishlist);
+                
+                if (response.added) {
+                    newWishlist.add(productId);
+                    showToast('Added to wishlist ❤️', 'success');
+                } else {
+                    newWishlist.delete(productId);
+                    showToast('Removed from wishlist', 'info');
+                }
+                
+                setWishlist(newWishlist);
+            }
+        } catch (error) {
+            console.error('❌ Error updating wishlist:', error);
+            showToast('Failed to update wishlist', 'error');
+        }
     };
 
     const handleProductClick = (product) => {
-        navigate(`/product/${product.id}/${product.type}`);
+        navigate(`/product/${product._id}/${product.type}`);
     };
 
     const handleViewAll = () => {
@@ -178,13 +261,17 @@ const ShopSection = () => {
                             </div>
                         </div>
                     </div>
+                ) : products.length === 0 ? (
+                    <div className="text-center py-16">
+                        <p className="text-gray-600 text-lg">No products available at the moment.</p>
+                    </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
                         {products.map((product) => (
                             <div
-                                key={product.id}
+                                key={product._id}
                                 className="group relative"
-                                onMouseEnter={() => setHoveredProduct(product.id)}
+                                onMouseEnter={() => setHoveredProduct(product._id)}
                                 onMouseLeave={() => setHoveredProduct(null)}
                             >
                                 <div
@@ -194,13 +281,15 @@ const ShopSection = () => {
                                     {/* Product Image Container */}
                                     <div className="relative h-72 bg-gray-100 overflow-hidden">
                                         {/* Badge */}
-                                        <div className="absolute top-3 left-3 bg-white text-orange-600 px-3 py-1 rounded-full text-xs font-bold z-10 shadow-md flex items-center gap-1">
-                                            <Star size={12} className="fill-orange-600" />
-                                            {product.badge}
-                                        </div>
+                                        {product.badge && (
+                                            <div className="absolute top-3 left-3 bg-white text-orange-600 px-3 py-1 rounded-full text-xs font-bold z-10 shadow-md flex items-center gap-1">
+                                                <Star size={12} className="fill-orange-600" />
+                                                {product.badge}
+                                            </div>
+                                        )}
 
                                         {/* Discount Badge */}
-                                        {product.discount && (
+                                        {product.discount > 0 && (
                                             <div className="absolute top-3 right-12 bg-orange-500 text-white px-2.5 py-1 rounded text-xs font-bold z-10 shadow-md">
                                                 {product.discount}% OFF
                                             </div>
@@ -209,13 +298,13 @@ const ShopSection = () => {
                                         {/* Wishlist Button */}
                                         <button
                                             className={`absolute top-3 right-3 rounded-full p-2.5 shadow-md transition-all duration-300 z-20 ${
-                                                wishlist.has(product.id)
+                                                wishlist.has(product._id)
                                                     ? 'bg-orange-500 text-white'
                                                     : 'bg-white text-gray-400 hover:bg-orange-500 hover:text-white'
                                             }`}
-                                            onClick={(e) => handleWishlist(e, product.id)}
+                                            onClick={(e) => handleWishlist(e, product._id)}
                                         >
-                                            <Heart size={18} className={wishlist.has(product.id) ? 'fill-current' : ''} />
+                                            <Heart size={18} className={wishlist.has(product._id) ? 'fill-current' : ''} />
                                         </button>
 
                                         {/* Product Image */}
@@ -229,7 +318,7 @@ const ShopSection = () => {
                                         />
 
                                         {/* Subtle gradient overlay */}
-                                        {hoveredProduct === product.id && (
+                                        {hoveredProduct === product._id && (
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent transition-all duration-300"></div>
                                         )}
                                     </div>
@@ -264,7 +353,7 @@ const ShopSection = () => {
                                         {/* Price and Button */}
                                         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                                             <div className="text-base font-bold text-gray-900">
-                                                MRP : {product.price}
+                                                MRP : ₹{product.price}/-
                                             </div>
 
                                             <button

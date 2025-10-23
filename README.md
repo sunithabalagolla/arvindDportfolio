@@ -24,8 +24,6 @@ src/
 │   └─ ui/                    # Search, hamburger, arrows, buttons
 │
 ├─ videos/                     # Video assets
-
-
 │─ data/
 │   └── EventData.js 
 ├─ components/                # Reusable components
@@ -35,7 +33,6 @@ src/
 │   │   └─ Card.jsx            # Generic card for News, Events, Volunteers, etc.
 │   │   └─ scrolltotop.js
 │       ├─protectedRoute.jsx
-
 
 |   ├─ gallery/ 
           ├─ imagecard.jsx 
@@ -57,13 +54,13 @@ src/
 │   │   ├─ ArvindArmyCard.jsx
 │   │   ├─ FeedbackForm.jsx
 │   │   └─ StayConnected.jsx
-    │   └─ fullwidthimage.jsx
-    │    └─ shopsection.jsx
+│   │   └─ fullwidthimage.jsx
+│   │   └─ shopsection.jsx
     │   └─ social section.jsx
 
 
     ├── context/
-   │   └── AuthContext.jsx 
+    │   └── AuthContext.jsx 
 
     ├── data/
    │   └── EventData.jsx 
@@ -102,6 +99,7 @@ src/
 │   │   ├─ MyViewPage.jsx
 │   ├─ showNavigate/
 │   │   ├─ show.jsx
+        └─ CartDropdown.jsx 
 │   │   
 │   │   
 │   │   
@@ -120,6 +118,8 @@ src/
 
 │   ├─ Events.jsx              # Full Event Calendar page
 │   ├─ Contact.jsx             # Contact / feedback page
+    ├─ admin/
+│   │   └─ AdminLogin.jsx 
 │
 ├─ routes/                     # Optional routing configuration
 │   └─ AppRoutes.jsx
@@ -130,9 +130,10 @@ src/
 ├─ App.jsx                      # Main App with Router
 └─ main.jsx                     # Vite entry point
 └── utils/
-       └── api.js (NEW - for backend calls)
+       └── api.js (- for backend calls)
        └── feedbackApi.js
-       └──eventApi.js
+       └── eventApi.js
+       └── donationApi.js
 
 
 
@@ -175,6 +176,8 @@ backend/
 │   └── generateOTP.js   # Helper function to generate random OTP codes.
     |__ notificationScheduler.js
     |__seedEvents.js
+    └── scheduler.js
+    └── seedProducts.js
      
 ├── .env                 # Stores environment variables (DB URL, email credentials, JWT secret).
 ├── .gitignore           # Ensures sensitive files (like .env) are not pushed to Git.

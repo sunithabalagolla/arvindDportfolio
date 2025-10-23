@@ -1,14 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Heart, Star, Filter, X, ChevronDown, Sparkles } from 'lucide-react';
+import { ShoppingCart, Heart, Star, Filter, X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import image1 from '../../assets/images/shop/image1.jpg';
-import image2 from '../../assets/images/shop/image2.jpg';
-import image3 from '../../assets/images/shop/image3.jpg';
-import image4 from '../../assets/images/shop/image4.jpg';
-import image5 from '../../assets/images/shop/iamge5.jpg';
+import { fetchAllProducts, addToCart, toggleWishlist, getWishlist } from '../../utils/shopApi';
+import { useAuth } from '../../context/AuthContext';
+
+// ✅ Toast Notification Helper Function
+const showToast = (message, type = 'success') => {
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+    
+    toast.className = `fixed top-20 right-4 z-[9999] px-6 py-4 rounded-lg shadow-2xl text-white font-medium ${bgColor}`;
+    toast.style.cssText = `
+        animation: slideIn 0.3s ease-out;
+        transition: all 0.3s ease-out;
+    `;
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="text-xl font-bold">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, 300);
+    }, 2500);
+};
+
+// Add keyframe animation
+if (!document.getElementById('toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'toast-styles';
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 const Shop = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth(); 
     const [allProducts, setAllProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,160 +68,62 @@ const Shop = () => {
     const [priceRange, setPriceRange] = useState([0, 2000]);
     const [wishlist, setWishlist] = useState(new Set());
 
-    // Mock product data - Replace with API call
-    const mockProducts = [
-        {
-            id: 1,
-            name: "Unisex BJP T-shirt Set of 1",
-            image: image1,
-            price: 499,
-            originalPrice: 624,
-            category: "apparel",
-            type: "orange-tshirt",
-            rating: 4.5,
-            reviews: 128,
-            discount: 20,
-            inStock: true,
-            badge: "Best Seller"
-        },
-        {
-            id: 2,
-            name: "BJP Logo Coffee Mug",
-            image: image2,
-            price: 499,
-            originalPrice: 599,
-            category: "accessories",
-            type: "mug",
-            rating: 4.8,
-            reviews: 95,
-            discount: 15,
-            inStock: true,
-            badge: "Top Rated"
-        },
-        {
-            id: 3,
-            name: "BJP Flags Set of 10",
-            image: image3,
-            price: 499,
-            originalPrice: 599,
-            category: "flags",
-            type: "flags",
-            rating: 4.6,
-            reviews: 142,
-            discount: 10,
-            inStock: true,
-            badge: "Popular"
-        },
-        {
-            id: 4,
-            name: "Unisex BJP T-shirt Set of 1",
-            image: image4,
-            price: 499,
-            originalPrice: 624,
-            category: "apparel",
-            type: "white-tshirt",
-            rating: 4.7,
-            reviews: 110,
-            discount: 25,
-            inStock: true,
-            badge: "Best Value"
-        },
-        {
-            id: 5,
-            name: "BJP Cap Premium Edition",
-            image: image5,
-            price: 349,
-            originalPrice: 499,
-            category: "accessories",
-            type: "cap",
-            rating: 4.4,
-            reviews: 87,
-            discount: 30,
-            inStock: true,
-            badge: "New"
-        },
-        {
-            id: 6,
-            name: "BJP Wristband Pack",
-            image: image1,
-            price: 299,
-            originalPrice: 399,
-            category: "accessories",
-            type: "wristband",
-            rating: 4.3,
-            reviews: 64,
-            discount: 25,
-            inStock: true,
-            badge: "Limited"
-        },
-        {
-            id: 7,
-            name: "Premium BJP T-shirt Combo",
-            image: image2,
-            price: 899,
-            originalPrice: 1299,
-            category: "apparel",
-            type: "combo",
-            rating: 4.9,
-            reviews: 203,
-            discount: 30,
-            inStock: true,
-            badge: "Exclusive"
-        },
-        {
-            id: 8,
-            name: "BJP Merchandise Bundle",
-            image: image3,
-            price: 1299,
-            originalPrice: 1799,
-            category: "flags",
-            type: "bundle",
-            rating: 4.5,
-            reviews: 156,
-            discount: 28,
-            inStock: false,
-            badge: "Bundle"
-        }
-    ];
-
+    // ✅ Load products from backend on component mount
     useEffect(() => {
-        // Simulate API call
-        const fetchProducts = async () => {
+        const loadProducts = async () => {
             try {
                 setLoading(true);
-                // Replace with actual API call:
-                // const response = await fetch('/api/products');
-                // const data = await response.json();
-                // setAllProducts(data);
+                const response = await fetchAllProducts({ limit: 100, page: 1 });
                 
-                setTimeout(() => {
-                    setAllProducts(mockProducts);
-                    setFilteredProducts(mockProducts);
-                    setLoading(false);
-                }, 800);
+                if (response.success && response.data) {
+                    setAllProducts(response.data);
+                    setFilteredProducts(response.data);
+                    console.log('✅ Products loaded:', response.data.length);
+                }
             } catch (error) {
-                console.error('Error fetching products:', error);
-                setAllProducts(mockProducts);
-                setFilteredProducts(mockProducts);
+                console.error('❌ Error loading products:', error);
+                showToast('Failed to load products', 'error');
+            } finally {
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        loadProducts();
     }, []);
 
+    // ✅ Load wishlist from backend
     useEffect(() => {
-        let filtered = allProducts;
+        const loadWishlist = async () => {
+            try {
+                if (isAuthenticated && user) {
+                    const response = await getWishlist();
+                    
+                    if (response.success && response.data) {
+                        const productIds = response.data.products.map(p => 
+                            typeof p === 'string' ? p : p._id
+                        );
+                        setWishlist(new Set(productIds));
+                        console.log('✅ Wishlist loaded:', productIds.length, 'items');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading wishlist:', error);
+            }
+        };
 
-        // Filter by category
+        loadWishlist();
+    }, [isAuthenticated, user]);
+
+    // ✅ Filter and sort products whenever filters change
+    useEffect(() => {
+        let filtered = [...allProducts];
+
         if (selectedCategory !== 'all') {
             filtered = filtered.filter(p => p.category === selectedCategory);
         }
 
-        // Filter by price range
         filtered = filtered.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
 
-        // Sort products
         if (sortBy === 'price-low') {
             filtered.sort((a, b) => a.price - b.price);
         } else if (sortBy === 'price-high') {
@@ -180,45 +131,115 @@ const Shop = () => {
         } else if (sortBy === 'rating') {
             filtered.sort((a, b) => b.rating - a.rating);
         } else if (sortBy === 'newest') {
-            filtered.sort((a, b) => b.id - a.id);
+            filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
 
         setFilteredProducts(filtered);
     }, [selectedCategory, sortBy, priceRange, allProducts]);
 
-    const handleAddToCart = (e, product) => {
-        e.stopPropagation();
-        
-        const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingProduct = existingCart.find(item => item.id === product.id);
-        
-        if (existingProduct) {
-            existingProduct.quantity += 1;
-        } else {
-            existingCart.push({ ...product, quantity: 1 });
+    // ✅ Add to cart handler with toast notification
+ // ✅ Fixed Add to cart handler with proper error handling
+// ✅ Updated handleAddToCart with better visual feedback
+const handleAddToCart = async (e, product) => {
+    e.stopPropagation();
+    
+    // ✅ Store button reference BEFORE async operation
+    const btn = e.currentTarget;
+    const originalBgColor = btn.style.backgroundColor;
+    const originalText = btn.innerHTML;
+    
+    // ✅ Show loading state immediately
+    btn.disabled = true;
+    btn.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>';
+    btn.classList.add('opacity-70', 'cursor-wait');
+    
+    try {
+        if (!isAuthenticated || !user) {
+            showToast('Please login to add items to cart', 'error');
+            navigate('/login');
+            return;
         }
-        
-        localStorage.setItem('cart', JSON.stringify(existingCart));
-        
-        const btn = e.currentTarget;
-        const originalContent = btn.innerHTML;
-        btn.innerHTML = '✓ Added!';
-        btn.style.backgroundColor = '#10b981';
-        setTimeout(() => {
-            btn.innerHTML = originalContent;
-            btn.style.backgroundColor = '';
-        }, 2000);
-    };
 
-    const handleWishlist = (e, productId) => {
-        e.stopPropagation();
-        const newWishlist = new Set(wishlist);
-        if (newWishlist.has(productId)) {
-            newWishlist.delete(productId);
+        // ✅ Wait for the API response
+        const response = await addToCart(product._id, 1);
+        
+        // ✅ Only show success if API call was successful
+        if (response && response.success) {
+            console.log('✅ Added to cart:', product.name);
+            
+            // Update cart badge
+            window.dispatchEvent(new Event('cartUpdated'));
+            
+            // ✅ Show success state
+            btn.style.backgroundColor = '#10b981';
+            btn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            `;
+            
+            // ✅ Show success toast
+            showToast(`${product.name} added to cart!`, 'success');
+            
+            // ✅ Reset button after animation
+            setTimeout(() => {
+                if (btn) {
+                    btn.innerHTML = originalText;
+                    btn.style.backgroundColor = originalBgColor;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-70', 'cursor-wait');
+                }
+            }, 1500);
         } else {
-            newWishlist.add(productId);
+            // ✅ Handle unsuccessful response
+            throw new Error(response?.message || 'Failed to add to cart');
         }
-        setWishlist(newWishlist);
+        
+    } catch (error) {
+        console.error('❌ Error adding to cart:', error);
+        showToast(error.message || 'Failed to add to cart', 'error');
+        
+        // ✅ Reset button on error
+        if (btn) {
+            btn.innerHTML = originalText;
+            btn.style.backgroundColor = originalBgColor;
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-wait');
+        }
+    }
+};
+
+
+    // ✅ Wishlist toggle handler with toast notification
+    const handleWishlist = async (e, productId) => {
+        e.stopPropagation();
+        
+        try {
+            if (!isAuthenticated || !user) {
+                showToast('Please login to manage wishlist', 'error');
+                navigate('/login');
+                return;
+            }
+
+            const response = await toggleWishlist(productId);
+            
+            if (response.success) {
+                const newWishlist = new Set(wishlist);
+                
+                if (response.added) {
+                    newWishlist.add(productId);
+                    showToast('Added to wishlist ❤️', 'success');
+                } else {
+                    newWishlist.delete(productId);
+                    showToast('Removed from wishlist', 'info');
+                }
+                
+                setWishlist(newWishlist);
+            }
+        } catch (error) {
+            console.error('❌ Error updating wishlist:', error);
+            showToast('Failed to update wishlist', 'error');
+        }
     };
 
     const categories = [
@@ -309,6 +330,7 @@ const Shop = () => {
                                 onClick={() => {
                                     setSelectedCategory('all');
                                     setPriceRange([0, 2000]);
+                                    showToast('Filters cleared', 'info');
                                 }}
                                 className="w-full px-4 py-2 bg-orange-100 text-orange-600 font-semibold rounded-lg hover:bg-orange-200 transition-colors"
                             >
@@ -399,6 +421,7 @@ const Shop = () => {
                                     onClick={() => {
                                         setSelectedCategory('all');
                                         setPriceRange([0, 2000]);
+                                        showToast('Filters cleared', 'info');
                                     }}
                                     className="mt-4 text-orange-500 hover:text-orange-600 font-semibold underline"
                                 >
@@ -409,14 +432,14 @@ const Shop = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredProducts.map((product) => (
                                     <div
-                                        key={product.id}
+                                        key={product._id}
                                         className="group relative"
-                                        onMouseEnter={() => setHoveredProduct(product.id)}
+                                        onMouseEnter={() => setHoveredProduct(product._id)}
                                         onMouseLeave={() => setHoveredProduct(null)}
                                     >
                                         <div
                                             className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
-                                            onClick={() => navigate(`/product/${product.id}/${product.type}`)}
+                                            onClick={() => navigate(`/product/${product._id}/${product.type}`)}
                                         >
                                             {/* Product Image Container */}
                                             <div className="relative h-80 bg-gray-100 overflow-hidden">
@@ -434,7 +457,7 @@ const Shop = () => {
                                                 </div>
 
                                                 {/* Discount Badge */}
-                                                {product.discount && (
+                                                {product.discount && product.discount > 0 && (
                                                     <div className="absolute top-3 right-12 bg-orange-500 text-white px-2.5 py-1 rounded text-xs font-bold z-10 shadow-md">
                                                         {product.discount}% OFF
                                                     </div>
@@ -443,13 +466,13 @@ const Shop = () => {
                                                 {/* Wishlist Button */}
                                                 <button
                                                     className={`absolute top-3 right-3 rounded-full p-2.5 shadow-md transition-all duration-300 z-20 ${
-                                                        wishlist.has(product.id)
+                                                        wishlist.has(product._id)
                                                             ? 'bg-orange-500 text-white'
                                                             : 'bg-white text-gray-400 hover:bg-orange-500 hover:text-white'
                                                     }`}
-                                                    onClick={(e) => handleWishlist(e, product.id)}
+                                                    onClick={(e) => handleWishlist(e, product._id)}
                                                 >
-                                                    <Heart size={18} className={wishlist.has(product.id) ? 'fill-current' : ''} />
+                                                    <Heart size={18} className={wishlist.has(product._id) ? 'fill-current' : ''} />
                                                 </button>
 
                                                 {/* Product Image */}
@@ -463,7 +486,7 @@ const Shop = () => {
                                                 />
 
                                                 {/* Subtle gradient overlay */}
-                                                {hoveredProduct === product.id && (
+                                                {hoveredProduct === product._id && (
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent transition-all duration-300"></div>
                                                 )}
                                             </div>

@@ -14,6 +14,10 @@ import { Search, TrendingUp, Clock, Sparkles, ChevronRight, ChevronLeft } from '
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo/logo.png";
 import { useAuth } from '../../context/AuthContext';
+import { getCart } from '../../utils/shopApi';  // ✅ Add this
+
+import CartDropdown from '../../pages/shopNavigate/CartDropdown';
+
 
 function Header({ forceOrangeBackground = false }) {
   const { isAuthenticated, user } = useAuth();
@@ -29,10 +33,16 @@ function Header({ forceOrangeBackground = false }) {
   // Language dropdown state
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('EN');
+  // ✅ shop Cart state
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   // Search scroll functionality
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+
+
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   const scrollRef = useRef(null);
 
   // Add ref for search input
@@ -85,6 +95,39 @@ function Header({ forceOrangeBackground = false }) {
       setTimeout(checkScroll, 300);
     }
   };
+
+
+  // ✅ Fetch cart count
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const response = await getCart();
+          if (response.success && response.data) {
+            setCartItemCount(response.data.totalItems || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching cart count:', error);
+          setCartItemCount(0);
+        }
+      } else {
+        setCartItemCount(0);
+      }
+    };
+
+    fetchCartCount();
+
+    // ✅ Listen for cart updates from shop page
+    const handleCartUpdate = () => {
+      fetchCartCount();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, [isAuthenticated, user]);
 
   // Language options
   const languages = [
@@ -257,7 +300,7 @@ border-t border-b border-l border-white/60
           <motion.img
             src={logo}
             alt="Logo"
-            onClick={() => navigate('/')} 
+            onClick={() => navigate('/')}
             className="h-8 md:h-12 lg:h-14 w-auto object-contain drop-shadow-md "
           />
         </div>
@@ -346,14 +389,43 @@ border-t border-b border-l border-white/60
             )}
           </div>
 
+
           {/* Cart - Desktop only */}
-          <motion.button
-            className={`${iconButtonClasses} hidden md:flex`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaShoppingCart className={`${scrolled ? 'text-white/100 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
-          </motion.button>
+          <div className="relative">
+            <motion.button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className={`${iconButtonClasses} hidden md:flex relative`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaShoppingCart
+                className={`${scrolled ? 'text-white/100 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`}
+              />
+
+              {/* Cart Badge */}
+              {cartItemCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold 
+        rounded-full w-5 h-5 flex items-center justify-center
+        shadow-lg border-2 border-white"
+                >
+                  {cartItemCount > 9 ? '9+' : cartItemCount}
+                </motion.span>
+              )}
+            </motion.button>
+
+            {/* Cart Dropdown */}
+            <CartDropdown
+              isOpen={isCartOpen}
+              onClose={() => setIsCartOpen(false)}
+              scrolled={scrolled}
+            />
+          </div>
+
+
+
 
           {/* Hamburger */}
           <motion.button
@@ -410,7 +482,7 @@ border-t border-b border-l border-white/60
                   <div className="space-y-3 mb-6">
                     {/* Login/Signup for mobile */}
                     <motion.button
-                     onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
+                      onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
                       className="w-full flex items-center justify-start 
                       h-12 px-4 rounded-xl 
                       bg-gradient-to-r from-white/15 via-white/12 to-white/8 
@@ -451,26 +523,44 @@ border-t border-b border-l border-white/60
                       <span className="text-white/90 font-medium transition-all duration-300">English</span>
                     </motion.button>
 
+
                     {/* Cart for mobile */}
+
                     <motion.button
+                      onClick={() => setIsCartOpen(true)}
                       className="w-full flex items-center justify-start 
-                      h-12 px-4 rounded-xl 
-                      bg-gradient-to-r from-white/15 via-white/12 to-white/8 
-                      backdrop-blur-2xl border-2 border-white/30
-                      hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
-                      shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                      hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
-                      transition-all duration-300 md:block
-                      relative overflow-hidden
-                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                      before:rounded-xl before:pointer-events-none
-                      hover:scale-[1.02] active:scale-[0.98]"
+  h-12 px-4 rounded-xl 
+  bg-gradient-to-r from-white/15 via-white/12 to-white/8 
+  backdrop-blur-2xl border-2 border-white/30
+  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
+  shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
+  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
+  transition-all duration-300 md:block
+  relative overflow-hidden
+  before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
+  before:rounded-xl before:pointer-events-none
+  hover:scale-[1.02] active:scale-[0.98]"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
-                      <span className="text-white/90 font-medium transition-all duration-300">Shopping Cart</span>
+                      <div className="relative">
+                        <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+
+                        {/* Mobile Cart Badge */}
+                        {cartItemCount > 0 && (
+                          <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-bold 
+      rounded-full w-4 h-4 flex items-center justify-center
+      shadow-lg border border-white">
+                            {cartItemCount > 9 ? '9+' : cartItemCount}
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="text-white/90 font-medium transition-all duration-300">
+                        Shopping Cart {cartItemCount > 0 && `(${cartItemCount})`}
+                      </span>
                     </motion.button>
+                   
                   </div>
 
                   {/* Mobile/Tablet Two-Column Layout */}
@@ -937,6 +1027,14 @@ border-t border-b border-l border-white/60
           </motion.div>
         )}
       </AnimatePresence>
+
+
+       {/* ✅ Cart Dropdown - Independent component */}
+  <CartDropdown 
+    isOpen={isCartOpen} 
+    onClose={() => setIsCartOpen(false)}
+    scrolled={scrolled}
+  />
     </header>
   );
 }

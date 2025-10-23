@@ -388,6 +388,162 @@ const validateRateLimit = (req, res, next) => {
     next();
 };
 
+
+/**
+ * Validation rules for cart add/update
+ */
+const validateCartInput = [
+    body('productId')
+        .trim()
+        .notEmpty()
+        .withMessage('Product ID is required')
+        .isMongoId()
+        .withMessage('Invalid Product ID format'),
+
+    body('quantity')
+        .notEmpty()
+        .withMessage('Quantity is required')
+        .isInt({ min: 1, max: 1000 })
+        .withMessage('Quantity must be a number between 1 and 1000'),
+
+    handleValidationErrors
+];
+
+/**
+ * Validation rules for product ID in URL params
+ */
+const validateProductIdParam = [
+    param('productId')
+        .trim()
+        .isMongoId()
+        .withMessage('Invalid Product ID format'),
+
+    handleValidationErrors
+];
+
+/**
+ * Validation rules for wishlist add
+ */
+const validateWishlistInput = [
+    body('productId')
+        .trim()
+        .notEmpty()
+        .withMessage('Product ID is required')
+        .isMongoId()
+        .withMessage('Invalid Product ID format'),
+
+    handleValidationErrors
+];
+
+/**
+ * Validation rules for product creation/update
+ */
+const validateProductInput = [
+    body('name')
+        .trim()
+        .notEmpty()
+        .withMessage('Product name is required')
+        .isLength({ min: 3, max: 100 })
+        .withMessage('Product name must be between 3 and 100 characters'),
+
+    body('description')
+        .trim()
+        .notEmpty()
+        .withMessage('Product description is required')
+        .isLength({ min: 10, max: 1000 })
+        .withMessage('Description must be between 10 and 1000 characters'),
+
+    body('price')
+        .notEmpty()
+        .withMessage('Price is required')
+        .isFloat({ min: 0 })
+        .withMessage('Price must be a valid number greater than 0'),
+
+    body('originalPrice')
+        .optional()
+        .isFloat({ min: 0 })
+        .withMessage('Original price must be a valid number'),
+
+    body('category')
+        .trim()
+        .notEmpty()
+        .withMessage('Category is required')
+        .isIn(['apparel', 'accessories', 'flags', 'others'])
+        .withMessage('Please select a valid category'),
+
+    body('type')
+        .trim()
+        .notEmpty()
+        .withMessage('Product type is required')
+        .isLength({ min: 2, max: 50 })
+        .withMessage('Product type must be between 2 and 50 characters'),
+
+    body('image')
+        .trim()
+        .notEmpty()
+        .withMessage('Product image URL is required')
+        .isURL()
+        .withMessage('Please provide a valid image URL'),
+
+    body('quantity')
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage('Quantity must be a positive number'),
+
+    body('discount')
+        .optional()
+        .isInt({ min: 0, max: 100 })
+        .withMessage('Discount must be between 0 and 100'),
+
+    body('badge')
+        .optional()
+        .trim()
+        .isIn(['Best Seller', 'Top Rated', 'Popular', 'Best Value', 'New', 'Limited', 'Exclusive', 'Bundle'])
+        .withMessage('Please select a valid badge'),
+
+    handleValidationErrors
+];
+
+/**
+ * Validation rules for product filters/search
+ */
+const validateProductQuery = [
+    query('category')
+        .optional()
+        .trim()
+        .isIn(['all', 'apparel', 'accessories', 'flags', 'others'])
+        .withMessage('Invalid category'),
+
+    query('sortBy')
+        .optional()
+        .trim()
+        .isIn(['featured', 'price-low', 'price-high', 'rating', 'newest'])
+        .withMessage('Invalid sort option'),
+
+    query('minPrice')
+        .optional()
+        .isFloat({ min: 0 })
+        .withMessage('Min price must be a valid number'),
+
+    query('maxPrice')
+        .optional()
+        .isFloat({ min: 0 })
+        .withMessage('Max price must be a valid number'),
+
+    query('search')
+        .optional()
+        .trim()
+        .isLength({ min: 1, max: 100 })
+        .withMessage('Search query must be between 1 and 100 characters'),
+
+    query('limit')
+        .optional()
+        .isInt({ min: 1, max: 100 })
+        .withMessage('Limit must be between 1 and 100'),
+
+    handleValidationErrors
+];
+
 module.exports = {
     validateRegistration,
     validateLogin,
@@ -401,7 +557,14 @@ module.exports = {
     validatePaginationQuery,
     handleValidationErrors,
     sanitizeInput,
-    validateRateLimit
+    validateRateLimit,
+
+
+    validateCartInput,
+    validateProductIdParam,
+    validateWishlistInput,
+    validateProductInput,
+    validateProductQuery
 };
 
 // This validation middleware includes:

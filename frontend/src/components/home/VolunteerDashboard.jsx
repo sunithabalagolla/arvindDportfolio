@@ -51,7 +51,19 @@ export default function VolunteerDashboard() {
       totalVolunteers: 30,
       image: image1,
       description: "Support education for underprivileged children"
-    }
+    },
+    {
+      id: 4,
+      title: "negro Camp",
+      role: "Volunteer",
+      date: "Oct 16 2025",
+      time: "10:00 AM - 01:00 PM",
+      location: "Parade Grounds - Hyderabad",
+      volunteersJoined: 24,
+      totalVolunteers: 50,
+      image: image1,
+      description: "Join the cleanliness drive"
+    },
   ];
 
   // Fetch user's joined events

@@ -1,13 +1,16 @@
+// src/utils/eventApi.js
 import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
-// Get auth token from localStorage - FIXED to use 'token' not 'authToken'
-const getAuthToken = () => {
-    return localStorage.getItem('token');  // ✅ Changed from 'authToken' to 'token'
+// Get token from localStorage
+const getAuthHeader = () => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// Get all events
+// ===== PUBLIC ENDPOINTS =====
+
 export const getAllEvents = async () => {
     try {
         const response = await axios.get(`${API_URL}/events`);
@@ -18,7 +21,16 @@ export const getAllEvents = async () => {
     }
 };
 
-// Get single event by ID
+export const getPastEvents = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/events/past`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching past events:', error);
+        throw error;
+    }
+};
+
 export const getEventById = async (eventId) => {
     try {
         const response = await axios.get(`${API_URL}/events/${eventId}`);
@@ -29,27 +41,15 @@ export const getEventById = async (eventId) => {
     }
 };
 
-// Set event notification
+// ===== PROTECTED ENDPOINTS (Require Auth) =====
+
 export const setEventNotification = async (eventId, reminderDays) => {
     try {
-        const token = getAuthToken();
-        
-        console.log('📨 Setting notification...');
-        console.log('Token:', token ? 'Found' : 'Not found');
-        console.log('Event ID:', eventId);
-        console.log('Reminder Days:', reminderDays);
-        
+        const token = localStorage.getItem('token');
         const response = await axios.post(
-            `${API_URL}/notifications/set`,
-            {
-                eventId,
-                reminderDays
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
+            `${API_URL}/events/notify`,  // ✅ FIXED
+            { eventId, reminderDays },
+            { headers: { Authorization: `Bearer ${token}` } }
         );
         return response.data;
     } catch (error) {
@@ -58,17 +58,12 @@ export const setEventNotification = async (eventId, reminderDays) => {
     }
 };
 
-// Get user's notifications
 export const getMyNotifications = async () => {
     try {
-        const token = getAuthToken();
+        const token = localStorage.getItem('token');
         const response = await axios.get(
-            `${API_URL}/notifications/my-notifications`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
+            `${API_URL}/events/notifications/my`,  // ✅ FIXED
+            { headers: { Authorization: `Bearer ${token}` } }
         );
         return response.data;
     } catch (error) {
@@ -77,17 +72,12 @@ export const getMyNotifications = async () => {
     }
 };
 
-// Cancel notification
 export const cancelNotification = async (notificationId) => {
     try {
-        const token = getAuthToken();
+        const token = localStorage.getItem('token');
         const response = await axios.delete(
-            `${API_URL}/notifications/${notificationId}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
+            `${API_URL}/events/notifications/${notificationId}`,  // ✅ FIXED
+            { headers: { Authorization: `Bearer ${token}` } }
         );
         return response.data;
     } catch (error) {

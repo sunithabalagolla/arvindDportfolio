@@ -1,266 +1,409 @@
+// backend/utils/seedEvents.js
+
 const mongoose = require('mongoose');
 const Event = require('../models/Event');
 require('dotenv').config();
 
-const events = [
-    {
-        title: "Nature Farming",
-        type: "Workshop",
-        description: "Nature Farming Workshop in Nizamabad",
-        fullDescription: "Shri Arvind Dharmapuri is thrilled to announce a Nature Farming Workshop in Nizamabad, dedicated to empowering farmers, agri-entrepreneurs, and rural youth with practical knowledge and innovative techniques for sustainable agriculture.",
-        date: new Date('2025-10-12T12:00:00'),
-        time: "12:00 PM - 2:00 PM",
-        location: "Dharmapuri Community Center",
-        image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=500&fit=crop",
-        capacity: 100,
-        registeredCount: 45,
-        instructor: "Shri Arvind Dharmapuri",
-        whyAttend: {
-            intro: "Shri Arvind Dharmapuri firmly believes that nature farming is the cornerstone of a healthier, self-reliant, and prosperous rural economy.",
-            points: [
-                "Equip participants with actionable, cost-effective farming solutions.",
-                "Promote chemical-free cultivation for healthier produce and ecosystems.",
-                "Enhance soil health and water conservation for sustainable agriculture.",
-                "Inspire a vibrant, environmentally responsible farming community in Nizamabad."
-            ]
-        },
-        highlights: [
-            { title: "Expert-Led Sessions", description: "Engage with agricultural scientists and progressive farmers." },
-            { title: "Hands-On Training", description: "Master techniques like composting and bio-fertilizer application." },
-            { title: "Live Demonstrations", description: "Observe real-time nature farming practices." }
-        ],
-        tags: ["Nature Farming", "Sustainable Agriculture", "Organic"],
-        color: "#81C784",
-        isActive: true
-    },
-    {
-        title: "AI for Beginners",
-        type: "Seminar",
-        description: "Introduction to Artificial Intelligence for students.",
-        fullDescription: "This seminar introduces students to AI fundamentals, applications, and its growing impact across industries. Learn from experienced AI engineers and explore career paths in technology.",
-        date: new Date('2025-07-10T10:00:00'),
-        time: "10:00 AM - 1:00 PM",
-        location: "T-Hub, Hyderabad",
-        image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800&h=500&fit=crop",
-        capacity: 150,
-        registeredCount: 90,
-        instructor: "Dr. Kavitha Reddy",
-        whyAttend: {
-            intro: "Explore how AI is transforming industries and how you can be part of this revolution.",
-            points: [
-                "Understand the basics of Machine Learning and Deep Learning.",
-                "Discover real-world AI applications in India.",
-                "Learn from industry professionals.",
-                "Get resources for hands-on AI learning."
-            ]
-        },
-        highlights: [
-            { title: "Interactive Sessions", description: "Engage with experts in live Q&A." },
-            { title: "Career Guidance", description: "Learn how to start your journey in AI." },
-            { title: "Free Learning Materials", description: "Get curated resources and datasets." }
-        ],
-        tags: ["AI", "Technology", "Learning"],
-        color: "#64B5F6",
-        isActive: true
-    },
-    {
-        title: "Startup Pitch Day",
-        type: "Competition",
-        description: "Pitch your startup ideas and win mentorship.",
-        fullDescription: "An exclusive platform for entrepreneurs to pitch their innovative ideas to investors, mentors, and startup incubators. Winners get mentorship, funding, and startup support.",
-        date: new Date('2025-08-05T14:00:00'),
-        time: "2:00 PM - 6:00 PM",
-        location: "T-Hub, Hyderabad",
-        image: "https://images.unsplash.com/photo-1581091870627-3f94b6d10b49?w=800&h=500&fit=crop",
-        capacity: 200,
-        registeredCount: 120,
-        instructor: "T-Hub Mentorship Panel",
-        whyAttend: {
-            intro: "Get your startup idea evaluated by top mentors and investors.",
-            points: [
-                "Receive personalized mentorship.",
-                "Connect with investors and incubators.",
-                "Win startup support packages.",
-                "Network with other entrepreneurs."
-            ]
-        },
-        highlights: [
-            { title: "Pitch Sessions", description: "5-minute presentation + feedback round." },
-            { title: "Investor Panel", description: "Interact with venture capitalists and angels." },
-            { title: "Mentor Matchmaking", description: "Find the right guidance for your startup." }
-        ],
-        tags: ["Startup", "Entrepreneurship", "Innovation"],
-        color: "#FFB74D",
-        isActive: true
-    },
-    {
-        title: "Clean India Marathon",
-        type: "Awareness Drive",
-        description: "Join the movement towards a cleaner and greener India.",
-        fullDescription: "Participate in the Clean India Marathon and promote environmental awareness while enjoying a healthy morning run through your city.",
-        date: new Date('2025-09-02T06:00:00'),
-        time: "6:00 AM - 9:00 AM",
-        location: "Necklace Road, Hyderabad",
-        image: "https://images.unsplash.com/photo-1546456073-92b9f0a8d413?w=800&h=500&fit=crop",
-        capacity: 300,
-        registeredCount: 230,
-        instructor: "Green India Foundation",
-        whyAttend: {
-            intro: "Be part of a fitness event with a purpose.",
-            points: [
-                "Raise awareness for environmental cleanliness.",
-                "Encourage healthy habits and community involvement.",
-                "Get eco-friendly participation kits.",
-                "Win medals and recognition."
-            ]
-        },
-        highlights: [
-            { title: "5K and 10K Runs", description: "Choose your preferred distance." },
-            { title: "Eco Kits", description: "Reusable bottles and organic T-shirts for all participants." },
-            { title: "Celebrity Guests", description: "Motivational speeches and flag-off ceremony." }
-        ],
-        tags: ["Clean India", "Fitness", "Environment"],
-        color: "#4DB6AC",
-        isActive: true
-    },
+/**
+ * Seed Script: Populate database with events
+ * 
+ * This script:
+ * 1. Clears existing events (optional)
+ * 2. Adds organized sample events with status fields
+ * 3. Separates upcoming, past, and draft events
+ * 
+ * Run: node utils/seedEvents.js
+ */
+
+// ===== UPCOMING EVENTS (Future dates, published) =====
+const upcomingEvents = [
     {
         title: "Photography Exhibition",
         type: "Exhibition",
-        description: "A showcase of India's cultural and natural beauty through lenses.",
-        fullDescription: "Join us for a stunning photography exhibition that captures the diverse landscapes, traditions, and people of India.",
-        date: new Date('2025-06-25T11:00:00'),
-        time: "11:00 AM - 4:00 PM",
-        location: "State Art Gallery, Hyderabad",
-        image: "https://images.unsplash.com/photo-1483794344563-d27a8d18014e?w=800&h=500&fit=crop",
-        capacity: 200,
-        registeredCount: 150,
-        instructor: "Indian Lens Club",
+        description: "Showcase of stunning photography from local and international artists.",
+        fullDescription: "Join us for an immersive photography exhibition featuring works from both emerging and established photographers. This exhibition explores themes of nature, culture, and human emotion through the lens of talented artists from around the world.",
+        date: new Date("2025-06-25"),
+        time: "10:00 AM - 6:00 PM",
+        location: "Art Gallery, Hyderabad",
+        image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800",
+        color: "#E91E63",
+        capacity: 150,
+        registeredCount: 45,
+        instructor: "Rajesh Kumar",
+        tags: ["Photography", "Art", "Exhibition"],
         whyAttend: {
-            intro: "Discover India through the eyes of talented photographers.",
+            intro: "This exhibition offers a unique opportunity to:",
             points: [
-                "Explore award-winning photographs.",
-                "Meet professional photographers.",
-                "Participate in live photo editing workshops.",
-                "Get inspired for your next photo journey."
+                "View stunning photographs from award-winning photographers",
+                "Learn about different photography techniques and styles",
+                "Network with photography enthusiasts and professionals",
+                "Get inspired for your own creative projects"
             ]
         },
         highlights: [
-            { title: "Gallery Walk", description: "Enjoy curated sections on culture, nature, and street photography." },
-            { title: "Photography Talks", description: "Insights from award-winning artists." },
-            { title: "Live Editing Zone", description: "Learn real-time techniques." }
+            {
+                title: "Opening Ceremony",
+                description: "Meet the featured photographers and hear about their creative process"
+            },
+            {
+                title: "Interactive Sessions",
+                description: "Participate in Q&A sessions with the artists"
+            }
         ],
-        tags: ["Photography", "Art", "Culture"],
-        color: "#BA68C8",
-        isActive: true
+        status: "published",
+        isArchived: false
     },
     {
-        title: "Coding Bootcamp",
+        title: "AI for Beginners Workshop",
         type: "Workshop",
-        description: "A full-day coding bootcamp for beginners.",
-        fullDescription: "Learn to code from scratch using HTML, CSS, and JavaScript. Ideal for students who want to start their journey in web development.",
-        date: new Date('2025-10-20T09:00:00'),
+        description: "Learn the basics of Artificial Intelligence and Machine Learning.",
+        fullDescription: "A comprehensive introduction to AI and ML concepts, designed for beginners. This hands-on workshop will cover fundamental concepts, practical applications, and future trends in artificial intelligence.",
+        date: new Date("2025-07-10"),
         time: "9:00 AM - 5:00 PM",
-        location: "nexus, Hyderabad",
-        image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=500&fit=crop",
+        location: "Tech Hub, Hyderabad",
+        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800",
+        color: "#2196F3",
         capacity: 80,
-        registeredCount: 60,
-        instructor: "kevin",
+        registeredCount: 52,
+        instructor: "Dr. Priya Sharma",
+        tags: ["AI", "Technology", "Workshop", "Machine Learning"],
         whyAttend: {
-            intro: "Start your web development journey with hands-on coding experience.",
+            intro: "Perfect for those who want to:",
             points: [
-                "Learn HTML, CSS, JavaScript basics.",
-                "Build your first mini website.",
-                "Understand frontend and backend integration.",
-                "Get guidance from industry developers."
+                "Understand AI fundamentals and applications",
+                "Get hands-on experience with ML tools",
+                "Learn from industry experts",
+                "Explore career opportunities in AI"
             ]
         },
         highlights: [
-            { title: "Live Coding", description: "Practice coding in real-time with mentors." },
-            { title: "Project Building", description: "Develop a mini project during the session." },
-            { title: "Certificate", description: "Get certified for completing the bootcamp." }
+            {
+                title: "Practical Demos",
+                description: "Live demonstrations of AI applications"
+            },
+            {
+                title: "Certificate",
+                description: "Receive a completion certificate"
+            }
         ],
-        tags: ["Coding", "Workshop", "Web Development"],
-        color: "#FF8A65",
-        isActive: true
+        status: "published",
+        isArchived: false
     },
     {
-        title: "Women in Tech Conference",
-        type: "Conference",
-        description: "Empowering women in technology and innovation.",
-        fullDescription: "A full-day conference celebrating women technologists, featuring inspiring talks, networking sessions, and mentorship opportunities.",
-        date: new Date('2025-11-25T10:00:00'),
+        title: "Yoga and Wellness Retreat",
+        type: "Wellness",
+        description: "A rejuvenating day of yoga, meditation, and holistic wellness practices.",
+        fullDescription: "Escape the hustle and bustle of daily life with our comprehensive wellness retreat. Experience the benefits of yoga, meditation, and mindfulness in a peaceful setting.",
+        date: new Date("2025-08-15"),
+        time: "6:00 AM - 12:00 PM",
+        location: "Serenity Gardens, Hyderabad",
+        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800",
+        color: "#4CAF50",
+        capacity: 50,
+        registeredCount: 28,
+        instructor: "Swami Anand",
+        tags: ["Yoga", "Wellness", "Meditation", "Health"],
+        whyAttend: {
+            intro: "Join us to:",
+            points: [
+                "Learn authentic yoga techniques",
+                "Practice guided meditation",
+                "Discover stress-relief methods",
+                "Connect with like-minded individuals"
+            ]
+        },
+        highlights: [
+            {
+                title: "Morning Yoga",
+                description: "Start your day with energizing yoga sessions"
+            },
+            {
+                title: "Healthy Breakfast",
+                description: "Enjoy organic, nutritious refreshments"
+            }
+        ],
+        status: "published",
+        isArchived: false
+    },
+    {
+        title: "Tech Career Fair 2025",
+        type: "Career Fair",
+        description: "Meet top tech companies and explore exciting career opportunities.",
+        fullDescription: "Connect with leading technology companies, startups, and recruiters. Perfect for students, fresh graduates, and professionals looking for new opportunities in the tech industry.",
+        date: new Date("2025-09-20"),
         time: "10:00 AM - 4:00 PM",
-        location: "Hyderabad International Convention Centre",
-        image: "https://images.unsplash.com/photo-1581091870627-3f94b6d10b49?w=800&h=500&fit=crop",
-        capacity: 300,
-        registeredCount: 270,
-        instructor: "WomenTech India",
+        location: "Convention Center, Hyderabad",
+        image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
+        color: "#FF9800",
+        capacity: 500,
+        registeredCount: 234,
+        tags: ["Career", "Technology", "Jobs", "Networking"],
         whyAttend: {
-            intro: "Connect, learn, and grow with India’s leading women in tech.",
+            intro: "Great opportunity to:",
             points: [
-                "Hear from women leaders in tech.",
-                "Join career mentorship sessions.",
-                "Participate in networking and hiring drives.",
-                "Celebrate achievements of women innovators."
+                "Meet recruiters from 50+ companies",
+                "Attend career guidance sessions",
+                "Network with industry professionals",
+                "Submit resumes on the spot"
             ]
         },
         highlights: [
-            { title: "Keynote Speakers", description: "Talks from top women engineers and founders." },
-            { title: "Panel Discussions", description: "Insights on diversity and inclusion." },
-            { title: "Networking Lunch", description: "Meet recruiters and mentors." }
+            {
+                title: "Company Booths",
+                description: "Visit booths of leading tech companies"
+            },
+            {
+                title: "Resume Review",
+                description: "Get your resume reviewed by experts"
+            }
         ],
-        tags: ["Women in Tech", "Diversity", "Innovation"],
-        color: "#F06292",
-        isActive: true
-    },
-    {
-        title: "Youth Leadership Summit",
-        type: "Summit",
-        description: "Develop leadership skills and a growth mindset.",
-        fullDescription: "An inspiring summit bringing together young minds to discuss innovation, leadership, and social change.",
-        date: new Date('2025-12-10T09:30:00'),
-        time: "9:30 AM - 3:30 PM",
-        location: "JNTU Auditorium, Hyderabad",
-        image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=500&fit=crop",
-        capacity: 250,
-        registeredCount: 190,
-        instructor: "Youth Empower Foundation",
-        whyAttend: {
-            intro: "Empower yourself with skills for leadership and change.",
-            points: [
-                "Develop confidence and communication skills.",
-                "Network with leaders and innovators.",
-                "Participate in leadership activities.",
-                "Earn a participation certificate."
-            ]
-        },
-        highlights: [
-            { title: "Leadership Workshops", description: "Interactive sessions on teamwork and innovation." },
-            { title: "Panel Talks", description: "Hear from inspiring youth icons." },
-            { title: "Networking", description: "Build meaningful connections." }
-        ],
-        tags: ["Leadership", "Motivation", "Youth"],
-        color: "#7986CB",
-        isActive: true
+        status: "published",
+        isArchived: false
     }
 ];
 
+// ===== PAST EVENTS (Recently completed, not archived) =====
+const pastEvents = [
+    {
+        title: "Startup Pitch Day",
+        type: "Competition",
+        description: "Entrepreneurs pitch their innovative startup ideas to investors.",
+        fullDescription: "An exciting platform for entrepreneurs to present their business ideas to a panel of experienced investors and industry experts. Winners receive funding and mentorship opportunities.",
+        date: new Date("2025-08-05"),
+        time: "2:00 PM - 6:00 PM",
+        location: "Startup Incubator, Hyderabad",
+        image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800",
+        color: "#9C27B0",
+        capacity: 100,
+        registeredCount: 78,
+        instructor: "Vikram Reddy",
+        tags: ["Startup", "Business", "Entrepreneurship", "Investment"],
+        whyAttend: {
+            intro: "Perfect for:",
+            points: [
+                "Entrepreneurs seeking funding",
+                "Investors looking for opportunities",
+                "Business enthusiasts",
+                "Networking with startup community"
+            ]
+        },
+        highlights: [
+            {
+                title: "Investor Panel",
+                description: "Meet leading venture capitalists"
+            },
+            {
+                title: "Prize Money",
+                description: "Winners receive seed funding"
+            }
+        ],
+        status: "completed",
+        isArchived: false
+    },
+    {
+        title: "Clean India Marathon",
+        type: "Sports & Social",
+        description: "Run for a cause - promoting cleanliness and environmental awareness.",
+        fullDescription: "Join thousands of runners in this annual marathon dedicated to promoting cleanliness and environmental consciousness. All proceeds go to clean-up initiatives across the city.",
+        date: new Date("2025-09-02"),
+        time: "6:00 AM - 9:00 AM",
+        location: "Necklace Road, Hyderabad",
+        image: "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=800",
+        color: "#4CAF50",
+        capacity: 1000,
+        registeredCount: 856,
+        tags: ["Marathon", "Environment", "Health", "Social Cause"],
+        whyAttend: {
+            intro: "Join us to:",
+            points: [
+                "Support environmental causes",
+                "Stay fit and healthy",
+                "Be part of a community movement",
+                "Win exciting prizes"
+            ]
+        },
+        highlights: [
+            {
+                title: "5K and 10K Runs",
+                description: "Choose your distance"
+            },
+            {
+                title: "Clean-up Drive",
+                description: "Participate in post-marathon clean-up"
+            }
+        ],
+        status: "completed",
+        isArchived: false
+    },
+    {
+        title: "Digital Marketing Masterclass",
+        type: "Workshop",
+        description: "Learn advanced digital marketing strategies from industry experts.",
+        fullDescription: "Comprehensive training on SEO, social media marketing, content strategy, and analytics. Perfect for marketers, entrepreneurs, and business owners.",
+        date: new Date("2025-09-15"),
+        time: "10:00 AM - 5:00 PM",
+        location: "Business Center, Hyderabad",
+        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
+        color: "#FF5722",
+        capacity: 60,
+        registeredCount: 55,
+        instructor: "Amit Verma",
+        tags: ["Marketing", "Digital", "Workshop", "Business"],
+        whyAttend: {
+            intro: "Learn to:",
+            points: [
+                "Master SEO techniques",
+                "Create effective social media campaigns",
+                "Analyze marketing metrics",
+                "Build a digital marketing strategy"
+            ]
+        },
+        highlights: [
+            {
+                title: "Hands-on Training",
+                description: "Work on real marketing campaigns"
+            },
+            {
+                title: "Tools & Templates",
+                description: "Get marketing tools and resources"
+            }
+        ],
+        status: "completed",
+        isArchived: false
+    }
+];
+
+// ===== ARCHIVED EVENTS (Old events, 6+ months ago) =====
+const archivedEvents = [
+    {
+        title: "New Year Cultural Festival 2025",
+        type: "Cultural Event",
+        description: "Grand celebration featuring music, dance, and cultural performances.",
+        fullDescription: "A spectacular evening of cultural performances celebrating the diversity and richness of Indian culture. Featured traditional and contemporary art forms.",
+        date: new Date("2025-01-01"),
+        time: "6:00 PM - 11:00 PM",
+        location: "Cultural Center, Hyderabad",
+        image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800",
+        color: "#FFC107",
+        capacity: 500,
+        registeredCount: 480,
+        tags: ["Culture", "Festival", "Music", "Dance"],
+        status: "completed",
+        isArchived: true,
+        archivedAt: new Date()
+    },
+    {
+        title: "Winter Coding Bootcamp",
+        type: "Bootcamp",
+        description: "Intensive 2-week coding bootcamp for aspiring developers.",
+        fullDescription: "Comprehensive coding bootcamp covering web development, algorithms, and software engineering best practices.",
+        date: new Date("2025-01-15"),
+        time: "9:00 AM - 6:00 PM (14 days)",
+        location: "Tech Academy, Hyderabad",
+        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800",
+        color: "#3F51B5",
+        capacity: 30,
+        registeredCount: 30,
+        instructor: "Team CodeMasters",
+        tags: ["Coding", "Bootcamp", "Programming", "Web Development"],
+        status: "completed",
+        isArchived: true,
+        archivedAt: new Date()
+    }
+];
+
+// ===== DRAFT EVENTS (Not yet published) =====
+const draftEvents = [
+    {
+        title: "Blockchain Summit 2026",
+        type: "Conference",
+        description: "Exploring the future of blockchain and cryptocurrency.",
+        fullDescription: "A premier conference bringing together blockchain experts, developers, and enthusiasts to discuss the latest trends and innovations in blockchain technology.",
+        date: new Date("2026-03-15"),
+        time: "9:00 AM - 6:00 PM",
+        location: "International Convention Center, Hyderabad",
+        image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800",
+        color: "#00BCD4",
+        capacity: 300,
+        registeredCount: 0,
+        tags: ["Blockchain", "Cryptocurrency", "Technology", "Conference"],
+        status: "draft",
+        isArchived: false
+    }
+];
+
+// ===== SEED FUNCTION =====
 const seedEvents = async () => {
     try {
+        console.log('🌱 Starting Event Seed...\n');
+        
+        // Connect to MongoDB
         await mongoose.connect(process.env.MONGODB_URI);
-        console.log('✅ Connected to MongoDB');
+        console.log('✅ Connected to MongoDB\n');
         
-        await Event.deleteMany({});
-        console.log('🗑️  Cleared existing events');
+        // OPTION 1: Clear all existing events (CAREFUL!)
+        // Uncomment the next 2 lines if you want to start fresh
+        // await Event.deleteMany({});
+        // console.log('🗑️  Cleared existing events\n');
         
-        const createdEvents = await Event.insertMany(events);
-        console.log(`✅ Seeded ${createdEvents.length} events`);
+        // OPTION 2: Clear only and re-seed (Recommended for testing)
+        const existingCount = await Event.countDocuments();
+        console.log(`📊 Current events in database: ${existingCount}`);
+        
+        const shouldClear = process.argv.includes('--clear');
+        if (shouldClear) {
+            await Event.deleteMany({});
+            console.log('🗑️  Cleared all existing events\n');
+        }
+        
+        // Combine all events
+        const allEvents = [
+            ...upcomingEvents,
+            ...pastEvents,
+            ...archivedEvents,
+            ...draftEvents
+        ];
+        
+        console.log('📥 Inserting events...\n');
+        
+        // Insert events
+        await Event.insertMany(allEvents);
+        
+        // Print summary
+        console.log('='.repeat(50));
+        console.log('✅ SEED COMPLETED SUCCESSFULLY!');
+        console.log('='.repeat(50));
+        console.log(`📅 Upcoming Events:     ${upcomingEvents.length}`);
+        console.log(`✅ Past Events:         ${pastEvents.length}`);
+        console.log(`📦 Archived Events:     ${archivedEvents.length}`);
+        console.log(`📝 Draft Events:        ${draftEvents.length}`);
+        console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        console.log(`📊 Total Events Added:  ${allEvents.length}`);
+        console.log('='.repeat(50));
+        console.log('\n💡 Tips:');
+        console.log('   - Run with --clear flag to replace all events');
+        console.log('   - Edit dates to test different scenarios');
+        console.log('   - Upcoming events will show on home page');
+        console.log('   - Past events show in "Past Events" section');
+        console.log('   - Archived events are hidden from public');
+        console.log('   - Draft events are hidden until published\n');
+        
+        // Close connection
+        await mongoose.connection.close();
+        console.log('🔌 MongoDB connection closed');
         
         process.exit(0);
+        
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('\n❌ Seed failed:');
+        console.error(error);
+        
+        await mongoose.connection.close();
         process.exit(1);
     }
 };
 
+// Run the seed
 seedEvents();
+
+

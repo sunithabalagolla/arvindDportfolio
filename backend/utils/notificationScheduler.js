@@ -1,3 +1,4 @@
+// In your scheduler file
 const cron = require('node-cron');
 const EventNotification = require('../models/EventNotification');
 const { sendNotificationEmail } = require('./sendEmail');
@@ -11,19 +12,27 @@ const startNotificationScheduler = () => {
                 isSent: false,
                 status: 'pending',
                 reminderDate: { $lte: now }
-            }).populate('event');
+            })
+            .populate('event')
+            .populate('user', 'firstName email'); // ADDED: Populate user data
             
             console.log(`📨 Found ${pendingNotifications.length} notifications to send`);
             
             for (const notification of pendingNotifications) {
                 try {
                     const event = notification.event;
+                    
+                    // FIXED: Use populated user data or stored userName as fallback
+                    const userName = notification.user?.firstName || notification.userName || 'User';
+                    
+                    console.log(`📧 Sending to: ${notification.userEmail}, Name: ${userName}`);
+                    
                     await sendNotificationEmail({
                         to: notification.userEmail,
                         subject: `🔔 Reminder: ${event.title}`,
                         type: 'reminder',
                         data: {
-                            userName: notification.userName,
+                            userName: userName, // FIXED
                             eventTitle: event.title,
                             eventDate: event.date,
                             eventTime: event.time,
@@ -36,9 +45,9 @@ const startNotificationScheduler = () => {
                     notification.sentAt = new Date();
                     await notification.save();
                     
-                    console.log(`✅ Notification sent to ${notification.userEmail}`);
+                    console.log(`✅ Notification sent to ${notification.userEmail} (${userName})`);
                 } catch (error) {
-                    console.error(`❌ Failed:`, error);
+                    console.error(`❌ Failed to send to ${notification.userEmail}:`, error);
                     notification.status = 'failed';
                     await notification.save();
                 }

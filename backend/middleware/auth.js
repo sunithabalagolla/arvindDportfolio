@@ -378,6 +378,36 @@ const revokeToken = async (req, res, next) => {
     }
 };
 
+
+const authorize = (...allowedRoles) => {
+    return (req, res, next) => {
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Authentication required.'
+                });
+            }
+
+            if (!allowedRoles.includes(req.user.role)) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Access denied. Required role(s): ${allowedRoles.join(', ')}`
+                });
+            }
+
+            console.log(`🔐 Authorization granted: ${req.user.email} (${req.user.role})`);
+            next();
+        } catch (error) {
+            console.error('❌ Authorization error:', error.message);
+            res.status(500).json({
+                success: false,
+                message: 'Authorization error'
+            });
+        }
+    };
+};
+
 module.exports = {
     authenticate,
     optionalAuth,
@@ -390,7 +420,8 @@ module.exports = {
     extractUserInfo,
     logUserActivity,
     checkTokenExpiry,
-    revokeToken
+    revokeToken,
+    authorize 
 };
 
 // This authentication middleware includes:
