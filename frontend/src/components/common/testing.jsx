@@ -14,6 +14,10 @@ import { Search, TrendingUp, Clock, Sparkles, ChevronRight, ChevronLeft } from '
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo/logo.png";
 import { useAuth } from '../../context/AuthContext';
+import { getCart } from '../../utils/shopApi';  // ✅ Add this
+
+import CartDropdown from '../../pages/shopNavigate/CartDropdown';
+
 
 function Header({ forceOrangeBackground = false }) {
   const { isAuthenticated, user } = useAuth();
@@ -29,10 +33,16 @@ function Header({ forceOrangeBackground = false }) {
   // Language dropdown state
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('EN');
+  // ✅ shop Cart state
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   // Search scroll functionality
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+
+
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   const scrollRef = useRef(null);
 
   // Add ref for search input
@@ -85,6 +95,39 @@ function Header({ forceOrangeBackground = false }) {
       setTimeout(checkScroll, 300);
     }
   };
+
+
+  // ✅ Fetch cart count
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const response = await getCart();
+          if (response.success && response.data) {
+            setCartItemCount(response.data.totalItems || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching cart count:', error);
+          setCartItemCount(0);
+        }
+      } else {
+        setCartItemCount(0);
+      }
+    };
+
+    fetchCartCount();
+
+    // ✅ Listen for cart updates from shop page
+    const handleCartUpdate = () => {
+      fetchCartCount();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, [isAuthenticated, user]);
 
   // Language options
   const languages = [
@@ -238,141 +281,208 @@ border-t border-b border-l border-white/60
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 transition-all duration-500">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 overflow-x-hidden max-w-[100vw]">
 
       {/* Header container with BJP orange background when scrolled */}
-      <div
-        className={`
-          grid grid-cols-[auto_1fr_auto] items-center gap-4
-          px-4 py-3 md:px-8 lg:px-16 xl:px-32 md:py-4
-         ${(scrolled && !isDashboardPage) || isDashboardPage || forceOrangeBackground
-            ? 'bg-[#FB8B35] backdrop-blur-xl border-b border-orange-400/30 shadow-2xl'
-            : 'bg-white/15 backdrop-blur-none border-b border-white/5'
-          }
-          transition-all duration-500 ease-out
-        `}
-      >
+    <div
+  className={`
+    grid grid-cols-[auto_1fr_auto] items-center gap-4
+    px-2 sm:px-3 md:px-8 lg:px-16 xl:px-32 py-2 sm:py-2.5 md:py-4
+    ${(scrolled && !isDashboardPage) || isDashboardPage || forceOrangeBackground
+      ? 'bg-[#FB8B35] backdrop-blur-xl border-b border-orange-400/30 shadow-2xl'
+      : 'bg-transparent backdrop-blur-none border-b border-white/10' // Changed to transparent
+    }
+    transition-all duration-500 ease-out
+  `}
+>
         {/* Logo */}
-        <div className="flex items-center">
-          <motion.img
-            src={logo}
-            alt="Logo"
-            className="h-8 md:h-12 lg:h-14 w-auto object-contain drop-shadow-md "
-          />
-        </div>
+        {/* Logo - Smaller on mobile */}
+<div className="flex items-center">
+  <motion.img
+    src={logo}
+    alt="Logo"
+    onClick={() => navigate('/')}
+    className="h-6 sm:h-7 md:h-10 lg:h-12 xl:h-14 w-auto object-contain drop-shadow-md cursor-pointer"
+  />
+</div>
 
         {/* Spacer */}
         <div></div>
 
         {/* Right side buttons */}
-        <div className="flex items-center gap-2 md:gap-3 text-white">
-          {/* Search Button */}
-          <motion.button
-            className={searchButtonClasses}
-            onClick={handleSearchOpen}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FaSearch className={`${scrolled ? 'text-white/90' : 'text-white/100'} group-hover:text-white transition-all duration-300 flex-shrink-0`} />
-            <span className={`${scrolled ? 'text-white' : 'text-white/90'} truncate text-xs md:text-base transition-all duration-300`}>Search here</span>
-          </motion.button>
+     {/* Right side buttons - UPDATED FOR MOBILE VISIBILITY */}
+<div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-3 text-white">
+  
+  {/* Search Button - Icon only on mobile, compact */}
+  <motion.button
+    className={`
+      flex items-center justify-center
+      w-9 sm:w-10 md:w-auto
+      h-9 sm:h-10 md:h-12
+      px-2 md:px-4 lg:px-6
+      rounded-lg md:rounded-xl
+      ${scrolled
+        ? 'bg-gradient-to-r from-orange-100/20 to-orange-50/10 border-orange-200/30 hover:from-orange-100/25 hover:to-orange-50/15 hover:border-orange-200/40'
+        : 'bg-gradient-to-r from-white/8 to-white/5 border-white/20 hover:from-white/10 hover:to-white/7 hover:border-white/25'
+      }
+      backdrop-blur-none 
+      bg-white/5
+      border-t border-b border-l border-white/60
+      cursor-pointer
+      shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_0_20px_rgba(0,0,0,0.2)]
+      hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_0_25px_rgba(0,0,0,0.25)]
+      transition-all duration-300 ease-out
+      font-inter
+      text-sm md:text-base
+      font-normal
+      hover:scale-[1.02]
+      active:scale-[0.98]
+      gap-1.5 md:gap-2
+    `}
+    onClick={handleSearchOpen}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+  >
+    <FaSearch className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0 text-sm md:text-base`} />
+    <span className={`${scrolled ? 'text-white' : 'text-white/90'} hidden md:inline truncate text-xs lg:text-base transition-all duration-300`}>
+      Search
+    </span>
+  </motion.button>
 
-          {/* Login/Signup - Desktop only */}
-          {/* Login/Signup - Desktop only */}
-          <motion.button
-            onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
-            className={`${textButtonClasses} hidden lg:flex`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FaUser className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
-            <span className={`${scrolled ? 'text-white' : 'text-white/90'} whitespace-nowrap transition-all duration-300`}>
-              {isAuthenticated ? user?.firstName || 'Dashboard' : 'Login/Signup'}
-            </span>
-          </motion.button>
+  {/* Login/Signup - Desktop only (hidden on mobile/tablet) */}
+  <motion.button
+    onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
+    className={`${textButtonClasses} hidden lg:flex`}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+  >
+    <FaUser className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
+    <span className={`${scrolled ? 'text-white' : 'text-white/90'} whitespace-nowrap transition-all duration-300`}>
+      {isAuthenticated ? user?.firstName || 'Dashboard' : 'Login/Signup'}
+    </span>
+  </motion.button>
 
-          {/* Language Dropdown - Desktop only */}
-          <div className="relative hidden md:block">
+  {/* Language Dropdown - Desktop only (md and up) */}
+  <div className="relative hidden md:block">
+    <motion.button
+      className={`${textButtonClasses} relative`}
+      onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <FaGlobe className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
+      <span className={`${scrolled ? 'text-white' : 'text-white/90'} transition-all duration-300`}>
+        {selectedLang}
+      </span>
+      <motion.div
+        animate={{ rotate: isLanguageOpen ? 180 : 0 }}
+        transition={{ duration: 0.2 }}
+        className={`w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${scrolled ? 'border-t-white/90' : 'border-t-white/100'
+          } transition-all duration-300 ml-1`}
+      />
+    </motion.button>
+
+    {/* Language Dropdown Menu */}
+    <AnimatePresence>
+      {isLanguageOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          transition={{ duration: 0.2 }}
+          className="absolute top-full mt-2 -left- bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[140px] z-50"
+        >
+          {languages.map((lang) => (
             <motion.button
-              className={`${textButtonClasses} relative`}
-              onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              key={lang.code}
+              className="w-full px-4 py-2  text-left text-black hover:bg-gray-100 transition-colors duration-200 flex items-center gap-3"
+              onClick={() => handleLanguageSelect(lang)}
+              whileHover={{ backgroundColor: '#f3f4f6' }}
             >
-              <FaGlobe className={`${scrolled ? 'text-white/90' : 'text-white/100'} transition-all duration-300 flex-shrink-0`} />
-              <span className={`${scrolled ? 'text-white' : 'text-white/90'} transition-all duration-300`}>
-                {selectedLang}
-              </span>
-              <motion.div
-                animate={{ rotate: isLanguageOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                className={`w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${scrolled ? 'border-t-white/90' : 'border-t-white/100'
-                  } transition-all duration-300 ml-1`}
-              />
+              <span className="font-medium">{lang.code}</span>
+              <span className="text-gray-600">{lang.name}</span>
             </motion.button>
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
 
-            {/* Language Dropdown Menu */}
-            <AnimatePresence>
-              {isLanguageOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full mt-2 -left- bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[140px] z-50"
-                >
-                  {languages.map((lang) => (
-                    <motion.button
-                      key={lang.code}
-                      className="w-full px-4 py-2  text-left text-black hover:bg-gray-100 transition-colors duration-200 flex items-center gap-3"
-                      onClick={() => handleLanguageSelect(lang)}
-                      whileHover={{ backgroundColor: '#f3f4f6' }}
-                    >
-                      <span className="font-medium">{lang.code}</span>
-                      <span className="text-gray-600">{lang.name}</span>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+    {isLanguageOpen && (
+      <div
+        className="fixed inset-0 z-40"
+        onClick={() => setIsLanguageOpen(false)}
+      />
+    )}
+  </div>
 
-            {/* Backdrop to close dropdown when clicking outside */}
-            {isLanguageOpen && (
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setIsLanguageOpen(false)}
-              />
-            )}
-          </div>
+  {/* Cart - Desktop only (md and up) */}
+  <div className="relative hidden md:block">
+    <motion.button
+      onClick={() => setIsCartOpen(!isCartOpen)}
+      className={`${iconButtonClasses} flex relative`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <FaShoppingCart
+        className={`${scrolled ? 'text-white/100 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`}
+      />
 
-          {/* Cart - Desktop only */}
-          <motion.button
-            className={`${iconButtonClasses} hidden md:flex`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaShoppingCart className={`${scrolled ? 'text-white/100 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
-          </motion.button>
+      {cartItemCount > 0 && (
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold 
+            rounded-full w-5 h-5 flex items-center justify-center
+            shadow-lg border-2 border-white"
+        >
+          {cartItemCount > 9 ? '9+' : cartItemCount}
+        </motion.span>
+      )}
+    </motion.button>
 
-          {/* Hamburger */}
-          <motion.button
-            className={iconButtonClasses}
-            onClick={() => setMenuOpen(!menuOpen)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              animate={{ rotate: menuOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {menuOpen ? (
-                <FaTimes className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
-              ) : (
-                <FaBars className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300`} />
-              )}
-            </motion.div>
-          </motion.button>
-        </div>
+    <CartDropdown
+      isOpen={isCartOpen}
+      onClose={() => setIsCartOpen(false)}
+      scrolled={scrolled}
+    />
+  </div>
+
+  {/* Hamburger - ALWAYS VISIBLE, compact on mobile */}
+  <motion.button
+    className={`
+      flex items-center justify-center
+      w-9 sm:w-10 md:w-12
+      h-9 sm:h-10 md:h-12
+      rounded-lg md:rounded-xl
+      ${scrolled
+        ? 'bg-gradient-to-r from-orange-100/20 to-orange-50/10 border-orange-200/30 hover:from-orange-100/25'
+        : 'bg-gradient-to-r from-white/8 to-white/5 border-white/20 hover:from-white/10'
+      }
+      backdrop-blur-none 
+      bg-white/5
+      border-t border-b border-l border-white/60
+      cursor-pointer
+      shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]
+      transition-all duration-300
+      hover:scale-[1.02]
+      active:scale-[0.98]
+    `}
+    onClick={() => setMenuOpen(!menuOpen)}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    <motion.div
+      animate={{ rotate: menuOpen ? 180 : 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {menuOpen ? (
+        <FaTimes className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300 text-base sm:text-lg md:text-xl`} />
+      ) : (
+        <FaBars className={`${scrolled ? 'text-white/90 hover:text-white' : 'text-white/100 hover:text-white'} transition-all duration-300 text-base sm:text-lg md:text-xl`} />
+      )}
+    </motion.div>
+  </motion.button>
+</div>
       </div>
 
       {/* Mobile Menu Overlay - New Design */}
@@ -409,7 +519,7 @@ border-t border-b border-l border-white/60
                   <div className="space-y-3 mb-6">
                     {/* Login/Signup for mobile */}
                     <motion.button
-                     onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
+                      onClick={isAuthenticated ? () => navigate('/auth/dashboard') : handleLoginClick}
                       className="w-full flex items-center justify-start 
                       h-12 px-4 rounded-xl 
                       bg-gradient-to-r from-white/15 via-white/12 to-white/8 
@@ -450,26 +560,44 @@ border-t border-b border-l border-white/60
                       <span className="text-white/90 font-medium transition-all duration-300">English</span>
                     </motion.button>
 
+
                     {/* Cart for mobile */}
+
                     <motion.button
+                      onClick={() => setIsCartOpen(true)}
                       className="w-full flex items-center justify-start 
-                      h-12 px-4 rounded-xl 
-                      bg-gradient-to-r from-white/15 via-white/12 to-white/8 
-                      backdrop-blur-2xl border-2 border-white/30
-                      hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
-                      shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
-                      hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
-                      transition-all duration-300 md:block
-                      relative overflow-hidden
-                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
-                      before:rounded-xl before:pointer-events-none
-                      hover:scale-[1.02] active:scale-[0.98]"
+  h-12 px-4 rounded-xl 
+  bg-gradient-to-r from-white/15 via-white/12 to-white/8 
+  backdrop-blur-2xl border-2 border-white/30
+  hover:from-white/20 hover:via-white/15 hover:to-white/10 hover:border-white/35 
+  shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.2),0_8px_32px_rgba(0,0,0,0.15)]
+  hover:shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.25),0_12px_40px_rgba(0,0,0,0.2)]
+  transition-all duration-300 md:block
+  relative overflow-hidden
+  before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent 
+  before:rounded-xl before:pointer-events-none
+  hover:scale-[1.02] active:scale-[0.98]"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
-                      <span className="text-white/90 font-medium transition-all duration-300">Shopping Cart</span>
+                      <div className="relative">
+                        <FaShoppingCart className="text-white/80 mr-3 flex-shrink-0 transition-all duration-300" />
+
+                        {/* Mobile Cart Badge */}
+                        {cartItemCount > 0 && (
+                          <span className="absolute -top-2 -right-1 bg-red-500 text-white text-xs font-bold 
+      rounded-full w-4 h-4 flex items-center justify-center
+      shadow-lg border border-white">
+                            {cartItemCount > 9 ? '9+' : cartItemCount}
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="text-white/90 font-medium transition-all duration-300">
+                        Shopping Cart {cartItemCount > 0 && `(${cartItemCount})`}
+                      </span>
                     </motion.button>
+                   
                   </div>
 
                   {/* Mobile/Tablet Two-Column Layout */}
@@ -936,6 +1064,14 @@ border-t border-b border-l border-white/60
           </motion.div>
         )}
       </AnimatePresence>
+
+
+       {/* ✅ Cart Dropdown - Independent component */}
+  <CartDropdown 
+    isOpen={isCartOpen} 
+    onClose={() => setIsCartOpen(false)}
+    scrolled={scrolled}
+  />
     </header>
   );
 }

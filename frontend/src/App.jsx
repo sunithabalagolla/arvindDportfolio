@@ -11,6 +11,7 @@ function AppContent() {
   const location = useLocation();
 
   const isJoinEventPage = location.pathname.startsWith('/volunteer/join/');
+  const isAdminPage = location.pathname.startsWith('/admin/');
 
   const noHeaderFooterPages = [
     "/login", 
@@ -24,26 +25,28 @@ function AppContent() {
   ];
 
   const transparentHeaderPages = ["/"];
-
-  const showHeaderFooter = !noHeaderFooterPages.includes(location.pathname) && !isJoinEventPage;
+ 
+  const showHeaderFooter = !noHeaderFooterPages.includes(location.pathname) 
+    && !isJoinEventPage 
+    && !isAdminPage; 
+    
   const forceOrangeHeader = !transparentHeaderPages.includes(location.pathname);
 
   return (
-    <div className="App">
+    <div className="flex flex-col min-h-screen">
       <ScrollToTop /> 
       
+      {/* Header */}
       {showHeaderFooter && (
         <Header forceOrangeBackground={forceOrangeHeader} />
       )}
 
-      <div
-        className={`page-wrapper ${
-          transparentHeaderPages.includes(location.pathname) ? "pt-0" : ""
-        }`}
-      >
+      {/* Main Content - Takes remaining space */}
+      <main className="flex-grow">
         <AppRoutes />
-      </div>
+      </main>
 
+      {/* Footer - Always at bottom */}
       {showHeaderFooter && <Footer />}
     </div>
   );

@@ -2,23 +2,45 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 require('dotenv').config();
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(async () => {
-    console.log('Connected to MongoDB');
+async function makeAdmin() {
+  try {
+    // Connect to database
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ Connected to database');
     
-    const result = await User.updateOne(
-      { email: "sunisunitha7011@gmail.com" },  // Your existing user account
-      { $set: { role: "admin" } }               // Promote to admin
+    // ⚠️ CHANGE THIS TO YOUR EMAIL (the one you registered with)
+    const email = 'sunithabalagolla@gmail.com';
+    
+    // Find user and make them admin
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      { role: 'admin' },
+      { new: true }
     );
     
-    console.log('Updated:', result.modifiedCount, 'document(s)');
+    if (user) {
+      console.log('🎉 SUCCESS! User is now admin:');
+      console.log('   Email:', user.email);
+      console.log('   Name:', user.firstName);
+      console.log('   Role:', user.role);
+      console.log('\n✅ You can now login at: http://localhost:5173/admin/login');
+    } else {
+      console.log('❌ ERROR: User not found with email:', email);
+      console.log('💡 Make sure you have:');
+      console.log('   1. Registered at /signup');
+      console.log('   2. Verified your email with OTP');
+      console.log('   3. Used the correct email address');
+    }
     
-    const user = await User.findOne({ email: "sunisunitha7011@gmail.com" });
-    console.log('Current role:', user.role);
+    await mongoose.connection.close();
+    console.log('\n✅ Database connection closed');
+    process.exit(0);
     
-    mongoose.connection.close();
-  })
-  .catch(err => {
-    console.error('Error:', err);
+  } catch (error) {
+    console.error('❌ Error:', error.message);
     process.exit(1);
-  });
+  }
+}
+
+// Run the function
+makeAdmin();

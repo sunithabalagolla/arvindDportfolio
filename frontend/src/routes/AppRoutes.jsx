@@ -30,7 +30,11 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import EventDetails from "../pages/Events/EventDetails";
 import VideosGallery from "../pages/Gallery/VideosGallery";
 import Shop from "../pages/shopNavigate/Shop";
+
+// Import ADMIN pages
 import AdminLogin from "../pages/admin/AdminLogin";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminProtectedRoute from "../components/admin/ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -127,13 +131,24 @@ function AppRoutes() {
       {/* Event Details - Keep public for now, or make protected based on your needs */}
     <Route path="/events/:eventId" element={<EventDetails/>} />
 
+
+    {/* =============== ADMIN ROUTES =============== */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route 
+        path="/admin/dashboard" 
+        element={
+          <AdminProtectedRoute>
+            <AdminDashboard/>
+          </AdminProtectedRoute>
+        } 
+      />
+
       {/* 404 Route - Should be last */}
       <Route path="*" element={<Navigate to="/" replace />} />
 
 
 
-      {/* ---------------admin ---------- */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+     
     </Routes>
   );
 }

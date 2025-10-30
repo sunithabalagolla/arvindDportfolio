@@ -9,6 +9,14 @@ const { startScheduler, stopScheduler } = require('./utils/scheduler');
 const feedbackRoutes = require('./routes/feedback');
 const { sanitizeInput } = require('./middleware/validation');
 
+
+// admin HERO SLIDES IMPORTS
+// ==============================================
+
+const adminHeroRoutes = require('./routes/admin/heroSlide');
+const publicHeroRoutes = require('./routes/public/heroSlides');
+
+
 // Load environment variables
 dotenv.config();
 
@@ -105,6 +113,15 @@ app.use('/api/wishlist', require('./routes/wishlist'));
 app.use('/api/donations', require('./routes/donations'));
 
 
+
+// Admin hero slides routes (protected)
+app.use('/api/admin/hero-slides', adminHeroRoutes);
+
+// Public hero slides routes (frontend access)
+app.use('/api/hero-slides', publicHeroRoutes);
+
+
+
 const path = require('path');  
 
 // Serve uploaded files (receipts)
@@ -175,6 +192,8 @@ const server = app.listen(PORT, () => {
 
 API Endpoints:
   🔐 Auth: http://localhost:${PORT}/api/auth
+    🖼️  Hero Slides: http://localhost:${PORT}/api/hero-slides
+  👑 Admin Hero: http://localhost:${PORT}/api/admin/hero-slides
   🛍️  Products: http://localhost:${PORT}/api/products
   🛒 Cart: http://localhost:${PORT}/api/cart
   ❤️  Wishlist: http://localhost:${PORT}/api/wishlist
@@ -225,5 +244,7 @@ process.on('uncaughtException', (err) => {
     stopScheduler();
     process.exit(1);
 });
+
+
 
 module.exports = app;

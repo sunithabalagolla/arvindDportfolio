@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Share2, Calendar, ChevronRight, ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Share2, Calendar, ChevronRight, ChevronLeft, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import news1 from '../../assets/images/home/news/newcarousels1.png';
 import news2 from '../../assets/images/home/news/newcarousels2.jpg';
@@ -7,6 +8,7 @@ import news3 from '../../assets/images/home/news/newcarousels3.png';
 
 export default function NewsCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [hoveredCard, setHoveredCard] = useState(null);
   const navigate = useNavigate();
 
   const newsData = [
@@ -14,8 +16,9 @@ export default function NewsCarousel() {
       id: 1,
       image: news1,
       title: "Nizamabad MP Shri Arvind Dharmapuri Meets Union Home Minister Shri Amit Shah Ji",
-      description: "Nizamabad MP Shri Arvind Dharmapuri had the privilege of meeting ",
-      date: "Aug 07, 2025"
+      description: "Nizamabad MP Shri Arvind Dharmapuri had the privilege of meeting",
+      date: "Aug 07, 2025",
+      trending: true
     },
     {
       id: 2,
@@ -27,8 +30,8 @@ export default function NewsCarousel() {
     {
       id: 3,
       image: news3,
-      title: "Make in India Boost: Defence Ministry Clears ₹67,000 Crore Projects; HAL, BEL, BDL in Focus",
-      description: "The Defence Acquisition Council (DAC), chaired by Defence Minister Rajnath Singh, has approved defence proposals worth around ₹67,000 crore to strengthen the Indian Army, Navy, and Air Force",
+      title: "Make in India Boost: Defence Ministry Clears ₹67,000 Crore Projects",
+      description: "The Defence Acquisition Council (DAC), chaired by Defence Minister Rajnath Singh, has approved defence proposals",
       date: "Aug 07, 2025"
     },
     {
@@ -49,16 +52,16 @@ export default function NewsCarousel() {
 
   const getItemsPerSlide = () => {
     if (typeof window !== 'undefined') {
-      if (window.innerWidth < 768) return 1;
-      if (window.innerWidth < 1024) return 2;
-      return 3;
+      if (window.innerWidth < 640) return 1;  // Mobile
+      if (window.innerWidth < 1024) return 2;  // Tablet
+      return 3; // Desktop
     }
     return 3;
   };
 
   const [itemsPerSlide, setItemsPerSlide] = useState(getItemsPerSlide());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setItemsPerSlide(getItemsPerSlide());
       setCurrentSlide(0);
@@ -69,6 +72,7 @@ export default function NewsCarousel() {
   }, []);
 
   const totalSlides = Math.ceil(newsData.length / itemsPerSlide);
+  const currentItems = newsData.slice(currentSlide * itemsPerSlide, (currentSlide + 1) * itemsPerSlide);
 
   const nextSlide = () => {
     if (currentSlide < totalSlides - 1) {
@@ -82,224 +86,233 @@ export default function NewsCarousel() {
     }
   };
 
-  const goToSlide = (slide) => {
-    setCurrentSlide(slide);
-  };
-
-  const handleViewAll = () => {
-    navigate('/news/AllNews');
-  };
-
-  const handleReadMore = (id) => {
-    navigate(`/news/${id}`);
-  };
-
-  const handleShare = (newsItem) => {
+  const handleShare = (e, newsItem) => {
+    e.stopPropagation();
     if (navigator.share) {
       navigator.share({
         title: newsItem.title,
         text: newsItem.description,
         url: window.location.href
       });
-    } else {
-      navigator.clipboard.writeText(`${newsItem.title} - ${window.location.href}`);
-      alert('Link copied to clipboard!');
     }
   };
 
-  const currentItems = newsData.slice(currentSlide * itemsPerSlide, (currentSlide + 1) * itemsPerSlide);
-
   return (
-    <div className="w-full bg-gradient-to-b from-white to-gray-50 py-6 sm:py-8 md:py-12 lg:py-16">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="relative w-full py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-white via-gray-50/30 to-white overflow-hidden">
+      
+      {/* Subtle Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#FB8B35]/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-200/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 sm:mb-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8 sm:mb-10 md:mb-12"
+        >
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#FB8B35]/10 rounded-full mb-4 border border-[#FB8B35]/20">
+            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-[#FB8B35]" />
+            <span className="text-xs sm:text-sm font-semibold text-[#FB8B35] uppercase tracking-wider">Latest Updates</span>
+          </div>
+
+          {/* Title */}
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             Latest News
           </h2>
-          <div className="w-16 sm:w-20 md:w-24 h-1 mx-auto rounded-full" style={{ background: '#FB8B35' }}></div>
-        </div>
+
+          {/* Simple Divider */}
+          <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-[#FB8B35] to-orange-500 mx-auto rounded-full" />
+        </motion.div>
 
         {/* Carousel Container */}
         <div className="relative">
-          {/* Navigation Arrows - Desktop only */}
+          
+          {/* Simple Navigation Arrows - Desktop */}
           <button
             onClick={prevSlide}
             disabled={currentSlide === 0}
-            className={`hidden lg:flex absolute -left-12 top-1/2 -translate-y-1/2 z-10
-                       transition-all duration-300
+            className={`hidden lg:flex absolute -left-4 xl:-left-8 top-1/2 -translate-y-1/2 z-20
+                       text-3xl xl:text-4xl transition-all duration-300
                        ${currentSlide === 0 
-                         ? 'opacity-30 cursor-not-allowed' 
-                         : 'hover:scale-125'}`}
-            style={{ color: '#FB8B35' }}
+                         ? 'text-gray-300 cursor-not-allowed' 
+                         : 'text-[#FB8B35] hover:text-orange-600 hover:scale-110'}`}
           >
-            <ChevronLeft className="w-10 h-10" />
+            <ChevronLeft />
           </button>
 
           <button
             onClick={nextSlide}
             disabled={currentSlide === totalSlides - 1}
-            className={`hidden lg:flex absolute -right-12 top-1/2 -translate-y-1/2 z-10
-                       transition-all duration-300
-                       ${currentSlide === totalSlides - 1
-                         ? 'opacity-30 cursor-not-allowed'
-                         : 'hover:scale-125'}`}
-            style={{ color: '#FB8B35' }}
+            className={`hidden lg:flex absolute -right-4 xl:-right-8 top-1/2 -translate-y-1/2 z-20
+                       text-3xl xl:text-4xl transition-all duration-300
+                       ${currentSlide === totalSlides - 1 
+                         ? 'text-gray-300 cursor-not-allowed' 
+                         : 'text-[#FB8B35] hover:text-orange-600 hover:scale-110'}`}
           >
-            <ChevronRight className="w-10 h-10" />
+            <ChevronRight />
           </button>
 
           {/* Cards Grid */}
-          <div className="relative px-0 sm:px-2 md:px-0">
-            {/* Mobile/Tablet Side Arrows */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8"
+            >
+              {currentItems.map((news, index) => (
+                <motion.div
+                  key={news.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  onMouseEnter={() => setHoveredCard(news.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  onClick={() => navigate(`/news/${news.id}`)}
+                  className="group cursor-pointer h-full"
+                >
+                  {/* Premium Card */}
+                  <div className="relative h-full bg-white rounded-xl sm:rounded-2xl overflow-hidden border-2 border-gray-100 hover:border-[#FB8B35]/30 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+                    
+                    {/* Shimmer Effect on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500 pointer-events-none" />
+                    
+                    {/* Trending Badge */}
+                    {news.trending && (
+                      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-10 px-2 sm:px-3 py-1 bg-gradient-to-r from-red-500 to-[#FB8B35] text-white text-[10px] sm:text-xs font-bold rounded-full shadow-lg">
+                        TRENDING
+                      </div>
+                    )}
+
+                    {/* Share Button */}
+                    <button
+                      onClick={(e) => handleShare(e, news)}
+                      className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 w-8 h-8 sm:w-10 sm:h-10 
+                               bg-white/90 backdrop-blur-sm
+                               rounded-full flex items-center justify-center
+                               shadow-md hover:shadow-lg
+                               hover:bg-[#FB8B35] hover:scale-110
+                               transition-all duration-300 group/share"
+                    >
+                      <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700 group-hover/share:text-white" />
+                    </button>
+
+                    {/* Image Container - FIXED: Using object-contain and proper height */}
+                    <div className="relative w-full h-48 sm:h-56 md:h-60 lg:h-64 bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+                      <img
+                        src={news.image}
+                        alt={news.title}
+                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-700"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/400x300?text=News+Image';
+                        }}
+                      />
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4 sm:p-5 md:p-6">
+                      {/* Date */}
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-[#FB8B35]" />
+                        <span>{news.date}</span>
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-[#FB8B35] transition-colors duration-300">
+                        {news.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-gray-600 text-sm sm:text-base line-clamp-2 mb-3 sm:mb-4">
+                        {news.description}
+                      </p>
+
+                      {/* Read More Button */}
+                      <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-100">
+                        <span className="text-[#FB8B35] font-semibold text-sm sm:text-base flex items-center gap-1 sm:gap-2 group-hover:gap-2 sm:group-hover:gap-3 transition-all">
+                          Read More
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </span>
+                        <div className="h-0.5 w-0 group-hover:w-12 sm:group-hover:w-16 bg-gradient-to-r from-[#FB8B35] to-orange-600 transition-all duration-500" />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Mobile/Tablet Navigation - Simple arrows below cards */}
+          <div className="flex lg:hidden items-center justify-center gap-8 mt-6 sm:mt-8">
             <button
               onClick={prevSlide}
               disabled={currentSlide === 0}
-              className={`lg:hidden absolute -left-1 sm:left-0 top-1/2 -translate-y-1/2 z-20
-                         p-1.5 sm:p-2 rounded-full bg-white shadow-lg transition-all duration-300
+              className={`text-2xl sm:text-3xl transition-all duration-300
                          ${currentSlide === 0 
-                           ? 'opacity-30 cursor-not-allowed' 
-                           : 'hover:shadow-xl active:scale-95'}`}
-              style={{ color: '#FB8B35' }}
+                           ? 'text-gray-300 cursor-not-allowed' 
+                           : 'text-[#FB8B35] hover:text-orange-600 active:scale-95'}`}
             >
-              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              <ChevronLeft />
             </button>
+
+            <span className="text-sm sm:text-base font-medium text-gray-600">
+              {currentSlide + 1} / {totalSlides}
+            </span>
 
             <button
               onClick={nextSlide}
               disabled={currentSlide === totalSlides - 1}
-              className={`lg:hidden absolute -right-1 sm:right-0 top-1/2 -translate-y-1/2 z-20
-                         p-1.5 sm:p-2 rounded-full bg-white shadow-lg transition-all duration-300
-                         ${currentSlide === totalSlides - 1
-                           ? 'opacity-30 cursor-not-allowed'
-                           : 'hover:shadow-xl active:scale-95'}`}
-              style={{ color: '#FB8B35' }}
+              className={`text-2xl sm:text-3xl transition-all duration-300
+                         ${currentSlide === totalSlides - 1 
+                           ? 'text-gray-300 cursor-not-allowed' 
+                           : 'text-[#FB8B35] hover:text-orange-600 active:scale-95'}`}
             >
-              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              <ChevronRight />
             </button>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 px-6 sm:px-8 md:px-10 lg:px-0">
-              {currentItems.map((news) => (
-                <div
-                  key={news.id}
-                  className="group bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-md
-                             transition-all duration-500 transform hover:-translate-y-2
-                             border border-gray-100 hover:shadow-xl
-                             flex flex-col h-full"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#FB8B35';
-                    e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(251, 139, 53, 0.3), 0 10px 10px -5px rgba(251, 139, 53, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgb(243, 244, 246)';
-                    e.currentTarget.style.boxShadow = '';
-                  }}
-                >
-                  {/* Image Container */}
-                  <div className="relative w-full h-48 sm:h-52 md:h-60 lg:h-64 bg-white flex items-center justify-center p-2 overflow-hidden">
-                    <img
-                      src={news.image}
-                      alt={news.title}
-                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <button
-                      onClick={() => handleShare(news)}
-                      className="absolute top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-4 
-                                 bg-white/95 backdrop-blur-sm rounded-full p-2 sm:p-2.5
-                                 transition-all duration-300
-                                 shadow-lg hover:shadow-xl transform hover:scale-110 active:scale-95"
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#FB8B35';
-                        e.currentTarget.style.color = 'white';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-                        e.currentTarget.style.color = 'inherit';
-                      }}
-                    >
-                      <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </button>
-                  </div>
-
-                  {/* Content Container */}
-                  <div className="p-3 sm:p-4 md:p-5 lg:p-6 bg-gradient-to-b from-white to-gray-50 flex flex-col flex-grow">
-                    <h3 className="font-bold text-gray-900 mb-2 sm:mb-2.5 md:mb-3 line-clamp-2 leading-snug
-                                   text-sm sm:text-base md:text-base lg:text-base
-                                   group-hover:text-base group-hover:sm:text-lg group-hover:md:text-xl group-hover:lg:text-xl
-                                   transition-all duration-300"
-                        onMouseEnter={(e) => e.currentTarget.style.color = '#FB8B35'}
-                        onMouseLeave={(e) => e.currentTarget.style.color = 'rgb(17, 24, 39)'}
-                    >
-                      {news.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 
-                                  text-xs sm:text-sm md:text-sm lg:text-sm
-                                  group-hover:text-[10px] group-hover:sm:text-xs group-hover:md:text-xs group-hover:lg:text-xs
-                                  mb-3 sm:mb-3.5 md:mb-4 line-clamp-2 leading-relaxed transition-all duration-300 flex-grow">
-                      {news.description}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-2.5 sm:pt-3 md:pt-4 border-t border-gray-100 mt-auto">
-                      <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" style={{ color: '#FB8B35' }} />
-                        <span className="whitespace-nowrap">{news.date}</span>
-                      </div>
-                      <button
-                        onClick={() => handleReadMore(news.id)}
-                        className="font-semibold text-xs sm:text-sm hover:underline transition-all duration-200 whitespace-nowrap active:scale-95"
-                        style={{ color: '#FB8B35' }}
-                        onMouseEnter={(e) => e.currentTarget.style.color = '#e67a2a'}
-                        onMouseLeave={(e) => e.currentTarget.style.color = '#FB8B35'}
-                      >
-                        Read More →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Slide Counter - Mobile/Tablet only */}
-          <div className="lg:hidden text-center mt-4 sm:mt-5">
-            <span className="text-xs sm:text-sm text-gray-600 font-medium bg-white px-3 py-1 rounded-full shadow-sm">
-              {currentSlide + 1} / {totalSlides}
-            </span>
           </div>
 
           {/* Pagination Dots */}
-          <div className="flex justify-center mt-6 sm:mt-7 md:mt-8 lg:mt-10 gap-1.5 sm:gap-2">
+          <div className="flex justify-center mt-6 sm:mt-8 lg:mt-10 gap-2 sm:gap-3">
             {Array.from({ length: totalSlides }, (_, index) => (
               <button
                 key={index}
-                onClick={() => goToSlide(index)}
-                className={`transition-all duration-300 rounded-full active:scale-90
-                  ${currentSlide === index
-                    ? 'w-6 sm:w-7 md:w-8 h-2 sm:h-2.5 md:h-3'
-                    : 'w-2 sm:w-2.5 md:w-3 h-2 sm:h-2.5 md:h-3 bg-gray-300 hover:bg-gray-400'
-                  }`}
-                style={currentSlide === index ? { backgroundColor: '#FB8B35' } : {}}
+                onClick={() => setCurrentSlide(index)}
+                className={`rounded-full transition-all duration-300 ${
+                  currentSlide === index
+                    ? 'w-8 sm:w-10 h-2 sm:h-2.5 bg-gradient-to-r from-[#FB8B35] to-orange-600'
+                    : 'w-2 sm:w-2.5 h-2 sm:h-2.5 bg-gray-300 hover:bg-gray-400'
+                }`}
               />
             ))}
           </div>
 
           {/* View All Button */}
-          <div className="text-center md:text-right mt-5 sm:mt-6 md:mt-8">
-            <button
-              onClick={handleViewAll}
-              className="font-semibold text-sm sm:text-base md:text-lg underline hover:underline transition-all duration-200 active:scale-95"
-              style={{ color: '#FB8B35' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#e67a2a'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#FB8B35'}
+          <div className="text-center mt-8 sm:mt-10">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/news/AllNews')}
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 
+                       bg-gradient-to-r from-[#FB8B35] to-orange-600
+                       text-white text-sm sm:text-base font-semibold rounded-full
+                       shadow-lg hover:shadow-xl
+                       transition-all duration-300"
             >
-              View All
-            </button>
+              View All News
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </motion.button>
           </div>
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

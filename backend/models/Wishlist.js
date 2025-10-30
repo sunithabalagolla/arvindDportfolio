@@ -111,7 +111,7 @@ wishlistSchema.statics.isProductInWishlist = async function(userId, productId) {
   const wishlist = await this.findOne({ userId });
   
   if (!wishlist) {
-    return false;
+    return false; 
   }
   
   return wishlist.hasProduct(productId);

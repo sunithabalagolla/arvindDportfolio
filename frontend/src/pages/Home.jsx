@@ -1,6 +1,5 @@
 import React from "react";
 import Carousel from "../components/home/Carousel";
-// import Header from "../components/common/Header";
 import ArvindProfile from "../components/home/ArvindProfile";
 import NewsCarousel from "../components/home/NewsCarousel";
 import PromisesScroll from "../components/home/PromisesScroll";
@@ -10,41 +9,34 @@ import ArvindFoundationCarousel from "../components/home/ArvindFoundationCarouse
 import EventCalendar from "../components/home/EventCalendar";
 import DonationSection from "../components/home/DonationSection";
 import FeedbackForm from "../components/home/FeedbackForm";
-import Footer from "../components/common/footer";
 import FullWidthImage from "../components/home/FullWidthImage";
 import ShopSection from "../components/home/ShopSection";
 import SocialSection from "../components/home/SocialSection";
 import ArvindArmyCard from "../components/home/ArvindArmyCard";
 
-
-
 function Home() {
     return (
-        <div className="relative w-full h-screen">
-              {/* Header overlays at the very top */}
-      {/* <Header /> */}
+        <>
+            {/* Hero Carousel */}
+            <section className="w-full ">
+                <Carousel />
+            </section>
 
-      {/* Carousel behind header */}
-      <Carousel />
-
-            {/* -----------------Rest of Home Page Sections--------------- */}
-
-           {/*arvind profile */}
-           <ArvindProfile></ArvindProfile>
-           <NewsCarousel></NewsCarousel>
-           <PromisesScroll></PromisesScroll>
-       <GalleryPreview />
-        <VolunteerDashboard></VolunteerDashboard>
-        <ArvindFoundationCarousel></ArvindFoundationCarousel>
-        <EventCalendar></EventCalendar>
-        <DonationSection></DonationSection>
-        <ArvindArmyCard></ArvindArmyCard>
-        <FeedbackForm></FeedbackForm>
-        <SocialSection></SocialSection>
-        <ShopSection></ShopSection>
-        <FullWidthImage></FullWidthImage>
-        <Footer></Footer>
-        </div>
+            {/* All Home Sections */}
+            <ArvindProfile />
+            <NewsCarousel />
+            <PromisesScroll />
+            <GalleryPreview />
+            <VolunteerDashboard />
+            <ArvindFoundationCarousel />
+            <EventCalendar />
+            <DonationSection />
+            <ArvindArmyCard />
+            <FeedbackForm />
+            <SocialSection />
+            <ShopSection />
+            <FullWidthImage />
+        </>
     );
 }
 
