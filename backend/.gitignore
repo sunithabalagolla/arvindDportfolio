@@ -1,12 +1,15 @@
-# Ignore environment variables
+# Environment variables
 .env
+.env.local
+.env.production
 
-# Ignore logs
-logs
-*.log
-
-# Ignore node_modules
+# Node modules
 node_modules/
 
-# Ignore system files
-.DS_Store
+# Logs
+logs/
+*.log
+
+# Build files
+dist/
+build/
