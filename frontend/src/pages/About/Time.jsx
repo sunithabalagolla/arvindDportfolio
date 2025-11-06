@@ -1,3 +1,4 @@
+// Updated to fix deployment
 import React from "react";
 
 // Use placeholder images temporarily
