@@ -19,6 +19,16 @@ const {
  */
 const createSlide = async (req, res) => {
   try {
+     // ✅ ADD THESE 5 LINES:
+    console.log('🟢 CREATE SLIDE - REQUEST RECEIVED');
+    console.log('📦 Request body:', req.body);
+    console.log('🖼️ Request file:', req.file);
+    console.log('🔍 All request keys:', Object.keys(req));
+    
+    // Check if body parser is working
+    if (!req.body || Object.keys(req.body).length === 0) {
+      console.log('❌ REQ.BODY IS EMPTY - Body parser issue!');
+    }
     const { heading, paragraph, buttonText, buttonLink, alignment, order, isActive } = req.body;
 
     // Validate required fields

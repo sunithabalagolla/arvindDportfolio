@@ -51,6 +51,16 @@ src/
     ├─ admin/
     │    ├── AdminLayout.jsx 
     │    └── ProtectedRoute.jsx
+         ├── common/                    ← Reusable admin components
+│   │   │   ├── ImageUpload.jsx
+            ├── LoadingSpinner.jsx
+            └── Toast.jsx
+            ├── FormModal.jsx
+            ├── ConfirmDialog.jsx
+        └── heroSlide/
+             ├── HeroSlideList.jsx
+             ├── HeroSlideForm.jsx
+             └── HeroSlidePreview.jsx
 
 |   ├─ gallery/ 
           ├─ imagecard.jsx 
@@ -79,15 +89,15 @@ src/
 
     ├── context/
     │   └── AuthContext.jsx 
-
+ 
     ├── data/
-   │   └── EventData.jsx 
+    │   └── EventData.jsx 
 │
 ├─ pages/                     # Full pages for routing
 │   ├─ Home.jsx
      
     |-auth/
-       └─ Dashboard.jsx 
+       └─ Dashboard.jsx  
        └─ forgotpassword.jsx 
        └─ Login.jsx 
        └─ otpverifciation.jsx 
@@ -101,7 +111,7 @@ src/
        └─ videogallery.jsx 
     |-galleryNaviagte/
        └─ image.jsx 
-       └─ ivideo.jsx 
+       └─ ivideo.jsx   
 
 │   ├─ Search/
 │   │   └─ Search.jsx          # Page for search results
@@ -139,6 +149,12 @@ src/
     ├─ admin/
 │   │   └─ AdminLogin.jsx 
         └── AdminDashboard.jsx
+        └── home/
+│           └── HeroCarouselManagement.jsx
+
+├── hooks/
+│   ├── useToast.js
+│   └── useImagePreview.js
 │
 ├─ routes/                     # Optional routing configuration
 │   └─ AppRoutes.jsx
@@ -158,6 +174,10 @@ src/
        └── api/
 │       ├── admin/
 │       │   └── heroSlideApi.js
+        └── public/
+│           └── heroSlideApi.js
+
+
 
 
 

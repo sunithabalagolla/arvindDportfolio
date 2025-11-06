@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { getAllSlides } from '../../utils/api/admin/heroSlideApi';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -10,13 +11,18 @@ const AdminDashboard = () => {
     totalArticles: 0,
     totalUsers: 0,
     totalGalleryImages: 0,
-    totalProducts: 0
+    totalProducts: 0,
+    totalSlides: 0,
+    activeSlides: 0
   });
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [slidesLoading, setSlidesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
     fetchStats();
+    fetchHeroSlides();
     setGreetingMessage();
   }, []);
 
@@ -27,18 +33,49 @@ const AdminDashboard = () => {
     else setGreeting('Good Evening');
   };
 
+  const fetchHeroSlides = async () => {
+    try {
+      setSlidesLoading(true);
+      const response = await getAllSlides();
+      
+      let slidesData = [];
+      if (response.data?.slides && Array.isArray(response.data.slides)) {
+        slidesData = response.data.slides;
+      } else if (Array.isArray(response.data)) {
+        slidesData = response.data;
+      } else if (Array.isArray(response.slides)) {
+        slidesData = response.slides;
+      } else if (Array.isArray(response)) {
+        slidesData = response;
+      }
+      
+      setHeroSlides(slidesData);
+      
+      // Update stats with slide data
+      setStats(prev => ({
+        ...prev,
+        totalSlides: slidesData.length,
+        activeSlides: slidesData.filter(s => s.isActive).length
+      }));
+    } catch (error) {
+      console.error('Error fetching hero slides:', error);
+    } finally {
+      setSlidesLoading(false);
+    }
+  };
+
   const fetchStats = async () => {
     try {
-      // Simulate loading
       setTimeout(() => {
-        setStats({
+        setStats(prev => ({
+          ...prev,
           totalNews: 12,
           totalEvents: 8,
           totalArticles: 15,
           totalUsers: 45,
           totalGalleryImages: 120,
           totalProducts: 24
-        });
+        }));
         setLoading(false);
       }, 1000);
     } catch (error) {
@@ -48,6 +85,18 @@ const AdminDashboard = () => {
   };
 
   const statCards = [
+    {
+      title: 'Hero Slides',
+      value: stats.totalSlides,
+      subtitle: `${stats.activeSlides} Active`,
+      change: '+2 new',
+      trend: 'up',
+      icon: '🎠',
+      gradient: 'from-orange-500 via-orange-600 to-red-600',
+      bgGradient: 'from-orange-50 to-orange-100',
+      iconBg: 'bg-orange-500',
+      path: '/admin/home/hero-carousel'
+    },
     {
       title: 'Total News',
       value: stats.totalNews,
@@ -118,8 +167,16 @@ const AdminDashboard = () => {
 
   const quickActions = [
     {
+      title: 'Add Slide',
+      description: 'Hero carousel',
+      icon: '🎠',
+      path: '/admin/home/hero-carousel',
+      gradient: 'from-orange-500 to-red-600',
+      hoverGradient: 'hover:from-red-600 hover:to-orange-700'
+    },
+    {
       title: 'Add News',
-      description: 'Create new article',
+      description: 'Create article',
       icon: '📰',
       path: '/admin/news',
       gradient: 'from-blue-500 to-blue-600',
@@ -127,7 +184,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Create Event',
-      description: 'Schedule new event',
+      description: 'Schedule event',
       icon: '📅',
       path: '/admin/events/create',
       gradient: 'from-green-500 to-green-600',
@@ -135,7 +192,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Add Article',
-      description: 'Write new article',
+      description: 'Write article',
       icon: '📝',
       path: '/admin/myview/articles',
       gradient: 'from-purple-500 to-purple-600',
@@ -146,8 +203,8 @@ const AdminDashboard = () => {
       description: 'Add to gallery',
       icon: '🖼️',
       path: '/admin/gallery/images',
-      gradient: 'from-[#FB8B35] to-[#E67A24]',
-      hoverGradient: 'hover:from-[#E67A24] hover:to-[#D66A14]'
+      gradient: 'from-pink-500 to-pink-600',
+      hoverGradient: 'hover:from-pink-600 hover:to-pink-700'
     },
     {
       title: 'Add Product',
@@ -162,12 +219,20 @@ const AdminDashboard = () => {
       description: 'Send newsletter',
       icon: '📧',
       path: '/admin/newsletter/create',
-      gradient: 'from-pink-500 to-pink-600',
-      hoverGradient: 'hover:from-pink-600 hover:to-pink-700'
+      gradient: 'from-[#FB8B35] to-[#E67A24]',
+      hoverGradient: 'hover:from-[#E67A24] hover:to-[#D66A14]'
     }
   ];
 
   const recentActivities = [
+    { 
+      action: 'Hero slide "Welcome" added', 
+      time: '30 minutes ago', 
+      icon: '🎠', 
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-100',
+      user: 'Admin User'
+    },
     { 
       action: 'New news article added', 
       time: '2 hours ago', 
@@ -248,7 +313,7 @@ const AdminDashboard = () => {
   return (
     <AdminLayout>
       <div className="space-y-8">
-        {/* Enhanced Welcome Header */}
+        {/* 🎨 Enhanced Welcome Header with Stats */}
         <div className="relative overflow-hidden bg-gradient-to-br from-[#FB8B35] via-orange-500 to-[#E67A24] rounded-3xl shadow-2xl">
           {/* Animated background elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 animate-pulse"></div>
@@ -275,6 +340,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
               
+              {/* Stats Preview */}
               <div className="hidden lg:block">
                 <div className="relative">
                   <div className="absolute inset-0 bg-white/20 rounded-3xl blur-2xl"></div>
@@ -296,10 +362,10 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Enhanced Stats Grid */}
+        {/* 📊 Enhanced Stats Grid - 7 Cards */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -312,7 +378,7 @@ const AdminDashboard = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {statCards.map((card, index) => (
               <div
                 key={index}
@@ -332,6 +398,11 @@ const AdminDashboard = () => {
                       <p className="text-4xl font-bold text-gray-800 group-hover:text-white transition-colors">
                         {card.value}
                       </p>
+                      {card.subtitle && (
+                        <p className="text-sm text-gray-500 group-hover:text-white/80 mt-1">
+                          {card.subtitle}
+                        </p>
+                      )}
                     </div>
                     <div className={`relative w-16 h-16 bg-gradient-to-br ${card.bgGradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500`}>
                       <span className="text-3xl">{card.icon}</span>
@@ -369,7 +440,121 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Enhanced Quick Actions */}
+        {/* 🎠 HERO CAROUSEL WIDGET */}
+        <div className="bg-gradient-to-br from-white via-orange-50/30 to-white rounded-3xl shadow-2xl p-8 border-2 border-orange-100">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-2xl">🎠</span>
+                </div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                  Hero Carousel Slides
+                </h2>
+              </div>
+              <p className="text-gray-600 ml-15">Manage your homepage hero section</p>
+            </div>
+            <button
+              onClick={() => navigate('/admin/home/hero-carousel')}
+              className="group flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl hover:shadow-2xl transition-all transform hover:scale-105 font-semibold"
+            >
+              <span>Manage Slides</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Slides Preview */}
+          {slidesLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-xl p-4 animate-pulse border-2 border-gray-100">
+                  <div className="h-40 bg-gray-200 rounded-lg mb-3"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : heroSlides.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-orange-200">
+              <div className="text-6xl mb-4">🎠</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">No Slides Yet</h3>
+              <p className="text-gray-500 mb-6">Create your first hero carousel slide</p>
+              <button
+                onClick={() => navigate('/admin/home/hero-carousel')}
+                className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl hover:shadow-lg transition-all transform hover:scale-105 font-semibold"
+              >
+                Create First Slide
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {heroSlides.slice(0, 3).map((slide) => (
+                  <div
+                    key={slide._id}
+                    className="group relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-gray-100 hover:border-orange-300 cursor-pointer transform hover:-translate-y-2"
+                    onClick={() => navigate('/admin/home/hero-carousel')}
+                  >
+                    {/* Slide Image */}
+                    <div className="relative h-40 overflow-hidden">
+                      <img
+                        src={slide.imageUrl}
+                        alt={slide.heading}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      {/* Status Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
+                          slide.isActive 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-gray-500 text-white'
+                        }`}>
+                          {slide.isActive ? '✓ Active' : '○ Inactive'}
+                        </span>
+                      </div>
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+
+                    {/* Slide Info */}
+                    <div className="p-4">
+                      <h3 className="font-bold text-gray-800 mb-1 truncate group-hover:text-orange-600 transition-colors">
+                        {slide.heading}
+                      </h3>
+                      <p className="text-sm text-gray-500 truncate mb-2">
+                        {slide.paragraph}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">
+                          {new Date(slide.createdAt).toLocaleDateString()}
+                        </span>
+                        <svg className="w-5 h-5 text-gray-400 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* View All Button */}
+              {heroSlides.length > 3 && (
+                <div className="text-center">
+                  <button
+                    onClick={() => navigate('/admin/home/hero-carousel')}
+                    className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl hover:from-orange-100 hover:to-orange-200 hover:text-orange-700 transition-all font-semibold border-2 border-gray-200 hover:border-orange-300"
+                  >
+                    View All {heroSlides.length} Slides →
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* 🚀 Enhanced Quick Actions with 7 Items */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -378,13 +563,13 @@ const AdminDashboard = () => {
               </h2>
               <p className="text-gray-500 mt-1">Frequently used features at your fingertips</p>
             </div>
-            <div className="hidden md:flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+            <div className="hidden md:flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span className="text-sm font-semibold text-gray-700">All systems operational</span>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
             {quickActions.map((action, index) => (
               <button
                 key={index}
@@ -419,8 +604,9 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* 📊 TWO COLUMN LAYOUT: Recent Activity + Weekly Performance */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Enhanced Recent Activity */}
+          {/* Enhanced Recent Activity (2/3 width) */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl p-8">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -466,7 +652,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Enhanced Weekly Performance */}
+          {/* Enhanced Weekly Performance (1/3 width) */}
           <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl p-8 border border-gray-100">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -538,7 +724,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Enhanced System Status */}
+        {/* 💻 Enhanced System Status */}
         <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl p-8 border border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -551,7 +737,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { title: 'Server Status', value: 'Online', icon: '🖥️', color: 'green' },
               { title: 'Database', value: 'Connected', icon: '💾', color: 'green' },

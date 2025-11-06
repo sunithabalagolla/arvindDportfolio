@@ -6,6 +6,10 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 
+// ✅ Admin
+// import { getActiveSlides } from '../../utils/api/public/public/heroSlideApi';
+import { getActiveSlides } from '../../utils/api/public/heroSlideApi';
+
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import slide1 from '../../assets/images/home/hero-slide-1.png';
@@ -17,44 +21,48 @@ function Carousel() {
   const nextRef = useRef(null);
   const [mounted, setMounted] = useState(false);
 
+
+  // ✅ Admin
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     setMounted(true);
+    fetchSlidesFromAPI();
   }, []);
 
-  const slides = [
-    {
-      id: 1,
-      image: slide1,
-      heading: "The Changemaker",
-      paragraph: "Arvind Dharmapuri is known for his bold, principled stand on various social and political issues. He has consistently fought against corruption, championed farmers' rights, and advocated for the welfare of the marginalized and powerless. His efforts also led to the establishment of the Turmeric Board in Telangana, a significant initiative aimed at supporting turmeric farmers and boosting the industry. He continues to be a relentless advocate for the betterment of farmers.",
-    },
-    {
-      id: 2,
-      image: slide2,
-      heading: "Arvind Dharmapuri Foundation",
-      paragraph: "Helping children is an investment in the future, nurturing not only their potential but also the well-being of society as a whole.",
-    },
-    {
-      id: 3,
-      image: slide3,
-      heading: "Keep Abreast of Current Events",
-      paragraph: "In today's fast-paced world, staying informed is essential. Our platform provides you with timely, reliable, and relevant information, ensuring you're always aware of the latest developments in your field of interest",
-    },
-  ];
+
+  // ✅ ADD this function
+  const fetchSlidesFromAPI = async () => {
+    try {
+      const response = await getActiveSlides();
+      setSlides(response.data.slides);
+    } catch (err) {
+      setError('Failed to load carousel');
+      console.error('Error fetching slides:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   // Split text into words for animation
   const AnimatedHeading = ({ text, slideId }) => {
     const words = text.split(' ');
     return (
       <h2 className={`!font-['Abhaya_Libre'] ${
-        slideId === 2 ? 'text-sm sm:text-3xl md:text-6xl' : 'text-sm sm:text-3xl md:text-[84px]'
+      slideId === '69087a2021d63826c1ddd55b' // The Foundation slide's _id
+        ? 'text-sm sm:text-2xl md:text-[70px]' // Smaller size for Foundation slide
+        : 'text-sm sm:text-3xl md:text-[84px]' // Default size
       } mb-6 font-bold relative`}>
         {words.map((word, index) => (
           <span
             key={index}
             className="inline-block animate-word-reveal opacity-0 text-white relative"
-            style={{ 
-              animationDelay: `${index * 0.15}s`, 
+            style={{
+              animationDelay: `${index * 0.15}s`,
               animationFillMode: 'forwards',
               textShadow: '0 4px 30px rgba(251, 139, 53, 0.8), 0 2px 15px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 139, 53, 0.4)'
             }}
@@ -75,17 +83,35 @@ function Carousel() {
   const AnimatedParagraph = ({ text }) => {
     return (
       <p className="font-['Hind_Siliguri'] text-xs font-normal sm:text-base md:text-lg leading-relaxed mb-6 text-[#FAFAFA] animate-fade-slide-in opacity-0"
-         style={{ 
-           animationDelay: '0.6s', 
-           animationFillMode: 'forwards',
-           textShadow: '0 3px 20px rgba(0, 0, 0, 0.7), 0 1px 8px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 139, 53, 0.2)',
-           letterSpacing: '0.3px'
-         }}>
+        style={{
+          animationDelay: '0.6s',
+          animationFillMode: 'forwards',
+          textShadow: '0 3px 20px rgba(0, 0, 0, 0.7), 0 1px 8px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 139, 53, 0.2)',
+          letterSpacing: '0.3px'
+        }}>
         {text}
       </p>
     );
   };
 
+
+
+  // ✅ ADmin
+  if (loading) {
+    return (
+      <div className="relative w-full h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading carousel...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="relative w-full h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">{error}</div>
+      </div>
+    );
+  }
   return (
     <div className="relative w-full h-screen overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800">
       {/* Premium Gradient Mesh Background */}
@@ -124,7 +150,7 @@ function Carousel() {
         <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#FB8B35] to-transparent animate-line-slide"></div>
         <div className="absolute bottom-0 right-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent animate-line-slide animation-delay-2s"></div>
       </div>
-      
+
       {/* Premium Glowing Orbs */}
       <div className="absolute top-10 right-10 w-48 h-48 bg-[#FB8B35] rounded-full opacity-25 blur-3xl animate-pulse-glow z-[1]"></div>
       <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-600 rounded-full opacity-20 blur-3xl animate-pulse-glow animation-delay-2s z-[1]"></div>
@@ -145,7 +171,7 @@ function Carousel() {
       >
         <FaChevronLeft className="text-3xl md:text-5xl drop-shadow-lg" />
       </div>
-      
+
       <div
         ref={nextRef}
         className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 z-50
@@ -168,7 +194,7 @@ function Carousel() {
         effect="fade"
         fadeEffect={{ crossFade: true }}
         speed={1500}
-        pagination={{ 
+        pagination={{
           clickable: true,
           bulletActiveClass: 'custom-bullet-active',
           renderBullet: (index, className) => {
@@ -191,7 +217,7 @@ function Carousel() {
               {/* Background Image with Advanced Effects */}
               <div className="absolute inset-0 overflow-hidden">
                 <img
-                  src={slide.image}
+                  src={slide.imageUrl}
                   alt={slide.heading}
                   className="w-full h-full object-cover object-center scale-105 animate-ken-burns"
                 />
@@ -226,89 +252,89 @@ function Carousel() {
                 ))}
               </div>
 
+          
               {/* Text Content */}
               <div className="absolute inset-0 flex items-center sm:items-center pt-10 sm:pb-8">
-                {slide.id === 1 || slide.id === 3 ? (
-                  // Slide 1 & 3: Left side
-                  <div className="text-white text-center sm:text-left max-w-[850px] mx-auto sm:mx-0 px-4 sm:pl-10 md:pl-38 relative z-10">
-                    <AnimatedHeading text={slide.heading} slideId={slide.id} />
+                {slide.alignment === 'left' ? (
+                  // LEFT ALIGNMENT: Content on left side
+                  <div className="text-white text-center sm:text-left max-w-[850px] mx-auto sm:mx-0 px-4 
+                  sm:pl-10 md:pl-38 relative z-10">
+                    <AnimatedHeading text={slide.heading} slideId={slide._id} />
                     <AnimatedParagraph text={slide.paragraph} />
-                    
+
                     <div className="flex justify-center sm:justify-center lg:justify-start w-full animate-slide-scale opacity-0"
-                         style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
-                      <button className="group relative w-[150px] sm:w-auto px-6 sm:px-8 py-3 sm:py-4
-                        bg-gradient-to-r from-[#FB8B35] via-orange-500 to-orange-600
-                        text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider
-                        rounded-2xl border-2 border-[#FB8B35]
-                        shadow-2xl shadow-[#FB8B35]/50
-                        hover:shadow-[0_0_40px_rgba(251,139,53,0.8)]
-                        transform hover:scale-110 hover:-translate-y-2 active:scale-95
-                        transition-all duration-700 flex items-center justify-center gap-2 
-                        overflow-hidden
-                        before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent
-                        before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000">
-                        
-                        {/* Animated Background Wave */}
+                      style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
+                      <button
+                        onClick={() => window.location.href = slide.buttonLink}
+                        className="group relative w-[150px] sm:w-auto px-6 sm:px-8 py-3 sm:py-4
+            bg-gradient-to-r from-[#FB8B35] via-orange-500 to-orange-600
+            text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider
+            rounded-2xl border-2 border-[#FB8B35]
+            shadow-2xl shadow-[#FB8B35]/50
+            hover:shadow-[0_0_40px_rgba(251,139,53,0.8)]
+            transform hover:scale-110 hover:-translate-y-2 active:scale-95
+            transition-all duration-700 flex items-center justify-center gap-2 
+            overflow-hidden
+            before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent
+            before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000">
+
                         <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></span>
-                        
-                        {/* Rotating Border Effect */}
+
                         <span className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                           <span className="absolute inset-[-2px] rounded-2xl bg-gradient-to-r from-[#FB8B35] via-yellow-400 to-[#FB8B35] animate-rotate-border"></span>
                         </span>
 
-                        {/* Button Content */}
-                        <span className="relative z-10 font-bold group-hover:text-[#FB8B35] transition-colors duration-300">Know More</span>
+                        <span className="relative z-10 font-bold group-hover:text-[#FB8B35] transition-colors duration-300">
+                          {slide.buttonText}
+                        </span>
 
-                        {/* Animated Arrow with Bounce */}
                         <svg className="w-5 h-5 relative z-10 group-hover:translate-x-2 group-hover:animate-bounce-arrow transition-transform duration-500 group-hover:text-[#FB8B35]"
                           fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
 
-                        {/* Multiple Pulse Rings */}
                         <span className="absolute inset-0 rounded-2xl border-2 border-white opacity-0 group-hover:opacity-75 scale-100 group-hover:scale-110 transition-all duration-500"></span>
                         <span className="absolute inset-0 rounded-2xl border-2 border-[#FB8B35] opacity-0 group-hover:opacity-50 scale-100 group-hover:scale-125 transition-all duration-700"></span>
                       </button>
                     </div>
                   </div>
                 ) : (
-                  // Slide 2: Container on right
-                  <div className="text-white text-center sm:text-left max-w-[850px] mx-auto sm:ml-auto sm:mr-0 px-3 sm:pr-10 md:pr-16 relative z-10">
-                    <AnimatedHeading text={slide.heading} slideId={slide.id} />
+                  // RIGHT ALIGNMENT: Content on right side
+                  <div className="text-white text-center sm:text-left max-w-[850px] mx-auto sm:ml-auto sm:mr-0                 px-3 sm:pr-10 md:pr-16 relative z-10">
+                    <AnimatedHeading text={slide.heading} slideId={slide._id} />
                     <AnimatedParagraph text={slide.paragraph} />
-                    
+
                     <div className="flex justify-center sm:justify-center lg:justify-start w-full animate-slide-scale opacity-0"
-                         style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
-                      <button className="group relative w-[150px] sm:w-auto px-6 sm:px-8 py-3 sm:py-4
-                        bg-gradient-to-r from-[#FB8B35] via-orange-500 to-orange-600
-                        text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider
-                        rounded-2xl border-2 border-[#FB8B35]
-                        shadow-2xl shadow-[#FB8B35]/50
-                        hover:shadow-[0_0_40px_rgba(251,139,53,0.8)]
-                        transform hover:scale-110 hover:-translate-y-2 active:scale-95
-                        transition-all duration-700 flex items-center justify-center gap-2 
-                        overflow-hidden
-                        before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent
-                        before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000">
-                        
-                        {/* Animated Background Wave */}
+                      style={{ animationDelay: '1s', animationFillMode: 'forwards' }}>
+                      <button
+                        onClick={() => window.location.href = slide.buttonLink}
+                        className="group relative w-[150px] sm:w-auto px-6 sm:px-8 py-3 sm:py-4
+            bg-gradient-to-r from-[#FB8B35] via-orange-500 to-orange-600
+            text-white text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider
+            rounded-2xl border-2 border-[#FB8B35]
+            shadow-2xl shadow-[#FB8B35]/50
+            hover:shadow-[0_0_40px_rgba(251,139,53,0.8)]
+            transform hover:scale-110 hover:-translate-y-2 active:scale-95
+            transition-all duration-700 flex items-center justify-center gap-2 
+            overflow-hidden
+            before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent
+            before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000">
+
                         <span className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></span>
-                        
-                        {/* Rotating Border Effect */}
+
                         <span className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                           <span className="absolute inset-[-2px] rounded-2xl bg-gradient-to-r from-[#FB8B35] via-yellow-400 to-[#FB8B35] animate-rotate-border"></span>
                         </span>
 
-                        {/* Button Content */}
-                        <span className="relative z-10 font-bold group-hover:text-[#FB8B35] transition-colors duration-300">Know More</span>
+                        <span className="relative z-10 font-bold group-hover:text-[#FB8B35] transition-colors duration-300">
+                          {slide.buttonText}
+                        </span>
 
-                        {/* Animated Arrow with Bounce */}
                         <svg className="w-5 h-5 relative z-10 group-hover:translate-x-2 group-hover:animate-bounce-arrow transition-transform duration-500 group-hover:text-[#FB8B35]"
                           fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
 
-                        {/* Multiple Pulse Rings */}
                         <span className="absolute inset-0 rounded-2xl border-2 border-white opacity-0 group-hover:opacity-75 scale-100 group-hover:scale-110 transition-all duration-500"></span>
                         <span className="absolute inset-0 rounded-2xl border-2 border-[#FB8B35] opacity-0 group-hover:opacity-50 scale-100 group-hover:scale-125 transition-all duration-700"></span>
                       </button>

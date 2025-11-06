@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Middleware Imports
-const { isAdmin } = require('../../middleware/admin/adminAuth');
+const { adminAuthFull } = require('../../middleware/admin/adminAuth');
 const { 
   uploadSingleImage, 
   handleUploadError, 
@@ -27,37 +27,56 @@ const {
 /**
  * 🚀 ADMIN HERO SLIDE ROUTES
  * All routes protected with admin authentication
+ * 
+ * ⚠️ CRITICAL: Specific routes MUST come before parameterized routes!
+ * Order matters: /reorder must come BEFORE /:id
  */
+
+// ==============================================
+// COLLECTION ROUTES (no ID parameter)
+// ==============================================
+
+// GET /admin/hero-slides - Get all slides (including inactive)
+router.get(
+  '/',
+  adminAuthFull,
+  getAllSlides
+);
 
 // POST /admin/hero-slides - Create new slide with image upload
 router.post(
   '/',
-  isAdmin,
+  adminAuthFull,
   uploadSingleImage,
   handleUploadError,
   validateImageUpload,
   createSlide
 );
 
-// GET /admin/hero-slides - Get all slides (including inactive)
-router.get(
-  '/',
-  isAdmin,
-  getAllSlides
+// PUT /admin/hero-slides/reorder - Bulk reorder slides
+// ⚠️ MUST come before /:id route!
+router.put(
+  '/reorder',
+  adminAuthFull,
+  reorderSlides
 );
+
+// ==============================================
+// SINGLE ITEM ROUTES (with ID parameter)
+// ==============================================
 
 // GET /admin/hero-slides/:id - Get single slide by ID
 router.get(
   '/:id',
-  isAdmin,
+  adminAuthFull,
   getSlideById
 );
 
 // PUT /admin/hero-slides/:id - Update slide (image optional)
 router.put(
   '/:id',
-  isAdmin,
-  uploadSingleImage, // Image upload is optional for updates
+  adminAuthFull,
+  uploadSingleImage,
   handleUploadError,
   updateSlide
 );
@@ -65,22 +84,27 @@ router.put(
 // DELETE /admin/hero-slides/:id - Delete slide permanently
 router.delete(
   '/:id',
-  isAdmin,
+  adminAuthFull,
   deleteSlide
 );
 
 // PATCH /admin/hero-slides/:id/toggle - Toggle active status
 router.patch(
   '/:id/toggle',
-  isAdmin,
+  adminAuthFull,
   toggleSlideStatus
 );
 
-// PUT /admin/hero-slides/reorder - Bulk reorder slides
-router.put(
-  '/reorder',
-  isAdmin,
-  reorderSlides
-);
+// ==============================================
+// ROUTE SUMMARY
+// ==============================================
+console.log('✅ Hero Slide Admin Routes Loaded:');
+console.log('   GET    /admin/hero-slides          → Get all slides');
+console.log('   POST   /admin/hero-slides          → Create slide');
+console.log('   PUT    /admin/hero-slides/reorder  → Reorder slides');
+console.log('   GET    /admin/hero-slides/:id      → Get single slide');
+console.log('   PUT    /admin/hero-slides/:id      → Update slide');
+console.log('   DELETE /admin/hero-slides/:id      → Delete slide');
+console.log('   PATCH  /admin/hero-slides/:id/toggle → Toggle status');
 
 module.exports = router;

@@ -35,6 +35,7 @@ import Shop from "../pages/shopNavigate/Shop";
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminProtectedRoute from "../components/admin/ProtectedRoute";
+import HeroCarouselManagement from "../pages/admin/home/HeroCarouselManagement";
 
 function AppRoutes() {
   return (
@@ -75,7 +76,7 @@ function AppRoutes() {
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/gallery/images" element={<ImagesGallery />} />
       <Route path="/gallery/videos" element={<VideosGallery />} />
-  
+
       <Route path="/shop" element={<Shop />} />
 
       {/* AUTHENTICATION ROUTES */}
@@ -84,71 +85,81 @@ function AppRoutes() {
       <Route path="/auth/otp-verification" element={<OTPVerification />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
-      
+
       {/* Legacy auth routes (redirect to new paths) */}
       <Route path="/login" element={<Navigate to="/auth/login" replace />} />
       <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
 
       {/* PROTECTED ROUTES */}
-      <Route 
+      <Route
         path="/auth/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Legacy dashboard route */}
       <Route path="/dashboard" element={<Navigate to="/auth/dashboard" replace />} />
 
       {/* Protected Volunteer Routes */}
-      <Route 
-        path="/volunteer/opportunities" 
+      <Route
+        path="/volunteer/opportunities"
         element={
           <ProtectedRoute>
             <AllOpportunities />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/volunteer/opportunity/:id" 
+      <Route
+        path="/volunteer/opportunity/:id"
         element={
           <ProtectedRoute>
             <OpportunityDetails />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/volunteer/join/:id" 
+      <Route
+        path="/volunteer/join/:id"
         element={
           <ProtectedRoute>
             <JoinEvent />
           </ProtectedRoute>
-        } 
+        }
       />
 
       {/* Event Details - Keep public for now, or make protected based on your needs */}
-    <Route path="/events/:eventId" element={<EventDetails/>} />
+      <Route path="/events/:eventId" element={<EventDetails />} />
 
 
-    {/* =============== ADMIN ROUTES =============== */}
+      {/* =============== ADMIN ROUTES =============== */}
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route 
-        path="/admin/dashboard" 
+      <Route
+        path="/admin/dashboard"
         element={
           <AdminProtectedRoute>
-            <AdminDashboard/>
+            <AdminDashboard />
           </AdminProtectedRoute>
-        } 
+        }
       />
 
-      {/* 404 Route - Should be last */}
+      {/* admin route for  HERO CAROUSEL */}
+      <Route
+        path="/admin/home/hero-carousel"
+        element={
+          <AdminProtectedRoute>
+            <HeroCarouselManagement />
+          </AdminProtectedRoute>
+        }
+      />
+
+      {/* 404 Route -  */}
       <Route path="*" element={<Navigate to="/" replace />} />
 
 
 
-     
+
     </Routes>
   );
 }

@@ -33,6 +33,8 @@ const isAdmin = async (req, res, next) => {
  */
 const adminAuthFull = async (req, res, next) => {
   try {
+     console.log('🔐 ALL HEADERS:', req.headers); 
+    console.log('🔐 Authorization:', req.headers.authorization); 
     // Get token from header (multiple header options)
     const token = req.header('Authorization')?.replace('Bearer ', '') || 
                   req.header('x-auth-token');
