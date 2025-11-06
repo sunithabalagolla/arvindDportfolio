@@ -59,7 +59,11 @@ app.use('/api', limiter);
 
 // CORS Configuration
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+     origin: [
+        'http://localhost:5173',
+        'https://arvind-dportfolio.vercel.app',
+        'https://arvind-dportfolio-git-main-sunithas-projects-3ef04653.vercel.app'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
