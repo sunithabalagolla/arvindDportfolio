@@ -1,9 +1,11 @@
 import React from "react";
-import heroImage from "../../assets/images/about/timeline/history1.jpg";
-import history1 from "../../assets/images/about/timeline/history1.jpg";
-import history2 from "../../assets/images/about/timeline/history2.jpg";
-import history3 from "../../assets/images/about/timeline/history3.jpg";
-import history4 from "../../assets/images/about/timeline/history4.jpg";
+
+// Use placeholder images temporarily
+const heroImage = "https://placehold.co/1920x1080/ff6b35/ffffff?text=Hero+Image";
+const history1 = "https://placehold.co/800x600/ff6b35/ffffff?text=History+1";
+const history2 = "https://placehold.co/800x600/ff6b35/ffffff?text=History+2";
+const history3 = "https://placehold.co/800x600/ff6b35/ffffff?text=History+3";
+const history4 = "https://placehold.co/800x600/ff6b35/ffffff?text=History+4";
 
 const historyData = [
   {
