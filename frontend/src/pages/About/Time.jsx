@@ -1,5 +1,5 @@
 import React from "react";
-import heroImage from "../../assets/images/about/timeline/timeline1.jpg";
+import heroImage from "../../assets/images/about/timeline/history1.jpg";
 import history1 from "../../assets/images/about/timeline/history1.jpg";
 import history2 from "../../assets/images/about/timeline/history2.jpg";
 import history3 from "../../assets/images/about/timeline/history3.jpg";
