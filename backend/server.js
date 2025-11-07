@@ -60,7 +60,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options('/api/*', cors(corsOptions));
+
 
 /* ✅ Body Parsing */
 app.use(express.json({ limit: "10mb" }));
