@@ -59,17 +59,25 @@ app.use('/api', limiter);
 
 // CORS Configuration
 const corsOptions = {
-     origin: [
+    origin: [
         'http://localhost:5173',
+        'http://localhost:5174',
         'https://arvind-dportfolio.vercel.app',
-        'https://arvind-dportfolio-git-main-sunithas-projects-3ef04653.vercel.app'
+        'https://arvind-dportfolio-git-main-sunithas-projects-3ef04653.vercel.app',
+        'https://arvind-dportfolio-nf8qcefia-sunithas-projects-3ef04653.vercel.app',
+        /https:\/\/arvind-dportfolio.*\.vercel\.app$/  // Matches all Vercel preview URLs
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Length', 'Authorization'],
+    maxAge: 86400 // 24 hours
 };
 
 app.use(cors(corsOptions));
+
+// Add preflight handler
+app.options('*', cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
