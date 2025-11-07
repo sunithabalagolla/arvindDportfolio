@@ -1,68 +1,55 @@
-// Base API URL
-const API_BASE_URL = 'http://localhost:5000/api';
+// ✅ Base API URL for Vercel + Render
+const API_BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : "http://localhost:5000/api";
 
-/**
- * Public API service for hero slides
- * No authentication required - for frontend carousel
- */
+// ✅ PUBLIC HERO SLIDE API (carousel)
 
-/**
- * Get all active hero slides for carousel
- * @returns {Promise} Array of active slides
- */
+// Get all active slides
 export const getActiveSlides = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/hero-slides`);
-    
+
     if (!response.ok) {
-      throw new Error('Failed to load hero slides');
+      throw new Error("Failed to load hero slides");
     }
-    
-    const data = await response.json();
-    return data;
+
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching hero slides:', error);
-    throw new Error('Failed to load hero slides');
+    console.error("Error fetching hero slides:", error);
+    throw error;
   }
 };
 
-/**
- * Get slides statistics to show like this in admin dashboard // Shows: Total Slides: 5, Active: 3, Inactive: 2
- * @returns {Promise} Slides count data
- */
+// Get count for admin dashboard
 export const getSlidesCount = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/hero-slides/count`);
-    
+
     if (!response.ok) {
-      throw new Error('Failed to load slides statistics');
+      throw new Error("Failed to load slides stats");
     }
-    
-    const data = await response.json();
-    return data;
+
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching slides count:', error);
-    throw new Error('Failed to load slides statistics');
+    console.error("Error fetching slides count:", error);
+    throw error;
   }
 };
 
-/**
- * Health check for hero slides service
- * @returns {Promise} Health status
- */
+// Health check
 export const checkHealth = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/hero-slides/health`);
-    
+
     if (!response.ok) {
-      throw new Error('Hero slides service unavailable');
+      throw new Error("Service unavailable");
     }
-    
-    const data = await response.json();
-    return data;
+
+    return await response.json();
   } catch (error) {
-    console.error('Error checking hero slides health:', error);
-    throw new Error('Hero slides service unavailable');
+    console.error("Error:", error);
+    throw error;
   }
 };
 
