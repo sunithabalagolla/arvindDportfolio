@@ -1,14 +1,17 @@
 import axios from 'axios';
 
-// Base API URL - Update this to match your backend URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Base API URL - no /api suffix here, just the backend URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+console.log('🔗 Feedback API Connected to:', API_URL); // Debug log
 
 // Create axios instance with default config
 const api = axios.create({
-    baseURL: API_URL,
+    baseURL: `${API_URL}/api/feedback`, // Add /api/feedback here
     headers: {
         'Content-Type': 'application/json'
-    }
+    },
+    withCredentials: true // Important for CORS
 });
 
 // Add token to requests if it exists
@@ -54,7 +57,7 @@ export const submitConcern = async (message, email = null) => {
             payload.email = email;
         }
         
-        const response = await api.post('/feedback/concern', payload);
+        const response = await api.post('/concern', payload);
         return response.data;
     } catch (error) {
         console.error('Error submitting concern:', error);
@@ -80,7 +83,7 @@ export const submitFeedback = async (message, email = null) => {
             payload.email = email;
         }
         
-        const response = await api.post('/feedback/feedback', payload);
+        const response = await api.post('/feedback', payload);
         return response.data;
     } catch (error) {
         console.error('Error submitting feedback:', error);
@@ -98,7 +101,7 @@ export const submitFeedback = async (message, email = null) => {
  */
 export const getAllFeedback = async (params = {}) => {
     try {
-        const response = await api.get('/feedback/all', { params });
+        const response = await api.get('/all', { params });
         return response.data;
     } catch (error) {
         console.error('Error fetching feedback:', error);
@@ -117,7 +120,7 @@ export const getAllFeedback = async (params = {}) => {
  */
 export const updateFeedback = async (id, updates) => {
     try {
-        const response = await api.patch(`/feedback/${id}`, updates);
+        const response = await api.patch(`/${id}`, updates);
         return response.data;
     } catch (error) {
         console.error('Error updating feedback:', error);
@@ -135,7 +138,7 @@ export const updateFeedback = async (id, updates) => {
  */
 export const deleteFeedback = async (id) => {
     try {
-        const response = await api.delete(`/feedback/${id}`);
+        const response = await api.delete(`/${id}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting feedback:', error);
