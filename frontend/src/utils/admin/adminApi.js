@@ -1,5 +1,5 @@
-// Base API URL
-const API_BASE_URL = 'http://localhost:5000/api';
+// Base API URL - uses environment variable
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
 
 // Helper function to get auth headers with token
 const getAuthHeaders = () => {
@@ -42,7 +42,7 @@ export const adminLogin = async (email, password) => {
     });
 
     const data = await handleResponse(response);
-
+    
     // Extract user and token from response
     const user = data.data?.user || data.user;
     const token = data.data?.token || data.token;
@@ -91,7 +91,7 @@ export const getCurrentAdmin = () => {
 };
 
 // ============================================
-// DASHBOARD APIs (Coming Soon)
+// DASHBOARD APIs
 // ============================================
 
 /**
@@ -104,7 +104,6 @@ export const getDashboardStats = async () => {
       method: 'GET',
       headers: getAuthHeaders(),
     });
-
     return await handleResponse(response);
   } catch (error) {
     throw error;
@@ -121,7 +120,6 @@ export const getRecentActivities = async () => {
       method: 'GET',
       headers: getAuthHeaders(),
     });
-
     return await handleResponse(response);
   } catch (error) {
     throw error;
@@ -138,7 +136,6 @@ export const getWeeklyStats = async () => {
       method: 'GET',
       headers: getAuthHeaders(),
     });
-
     return await handleResponse(response);
   } catch (error) {
     throw error;
