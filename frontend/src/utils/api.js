@@ -1,12 +1,18 @@
 import axios from 'axios';
 
+// Get API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+console.log('🔗 API Connected to:', API_URL); // Debug log
+
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+    baseURL: `${API_URL}/api`, // Add /api prefix here
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 30000, // 30 seconds - increased for email sending
+    timeout: 30000, // 30 seconds
+    withCredentials: true, // Important for CORS
 });
 
 // Request interceptor - Add token to requests
@@ -26,7 +32,7 @@ api.interceptors.request.use(
 // Response interceptor - Handle errors globally
 api.interceptors.response.use(
     (response) => {
-        return response.data; // Return only data part (contains success, message, data)
+        return response.data; // Return only data part
     },
     (error) => {
         // Handle different error types
@@ -45,6 +51,7 @@ api.interceptors.response.use(
             return Promise.reject(data?.message || data?.error || 'An error occurred');
         } else if (error.request) {
             // Request made but no response
+            console.error('Network Error:', error.message);
             return Promise.reject('Network error. Please check your connection.');
         } else {
             // Something else happened
