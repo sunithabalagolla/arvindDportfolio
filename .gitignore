@@ -1,8 +1,15 @@
 # Environment files
 .env
-*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ✅ Allow .env.production (safe to commit - no secrets)
+!.env.production
+
+# Backend env (if in same repo)
 backend/.env
-frontend/.env
 
 # Dependencies
 node_modules/
@@ -12,7 +19,33 @@ frontend/node_modules/
 # Logs
 *.log
 logs/
+backend/logs/
+frontend/logs/
 
 # Build files
 dist/
 build/
+backend/dist/
+frontend/dist/
+backend/build/
+frontend/build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+.temp/
+.tmp/
